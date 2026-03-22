@@ -1,4 +1,5 @@
 import os #Importamos la libreria OS
+import matplotlib.pyplot as plt
 
 class Airport:
 
@@ -89,10 +90,10 @@ def LoadAirports(filename):
                     lon_sec = float(lon_str[-2:])
 
                     lon_dec = lon_deg + (lon_min / 60) + (lon_sec / 3600)
-                    if lon_dir == 'S':
+                    if lon_dir == 'W':
                         lon_dec = -lon_dec
 
-                    airport = Airport(code, lat_deg, lon_dec)
+                    airport = Airport(code, lat_dec, lon_dec)
                     airports.append(airport)
 
                 except ValueError:
@@ -108,69 +109,69 @@ def SaveSchengenAirports(airports, filename):
 
     try:
         with open(filename, 'w') as file:
-            file.write ('CODE LAT LON')
+            file.write ('CODE LAT LON\n')
 
-        i = 0
-        while i < len(airports):
-            airport = airports[i]
+            i = 0
+            while i < len(airports):
+                airport = airports[i]
 
-            if airport.schengen:
-                lat_dec = airport.lat
-                if lat_dec >= 0:
-                    lat_dir = "N"
-                else:
-                    lat_dir = "S"
-                    lat_dec = -lat_dec
+                if airport.schengen:
+                    lat_dec = airport.lat
+                    if lat_dec >= 0:
+                        lat_dir = "N"
+                    else:
+                        lat_dir = "S"
+                        lat_dec = -lat_dec
 
-                lat_deg = int(lat_dec)
-                lat_temp = (lat_dec-lat_deg)*60
-                lat_min = int(lat_temp)
-                lat_sec = int(round((lat_temp-lat_min)*60))
+                    lat_deg = int(lat_dec)
+                    lat_temp = (lat_dec-lat_deg)*60
+                    lat_min = int(lat_temp)
+                    lat_sec = int(round((lat_temp-lat_min)*60))
 
-                str_lat_deg = str(lat_deg)
-                while len(str_lat_deg) < 2:
-                    str_lat_deg = '0' + str_lat_deg
+                    str_lat_deg = str(lat_deg)
+                    while len(str_lat_deg) < 2:
+                        str_lat_deg = '0' + str_lat_deg
 
-                str_lat_min = str(lat_min)
-                while len(str_lat_min) < 2:
-                    str_lat_min = '0' + str_lat_min
+                    str_lat_min = str(lat_min)
+                    while len(str_lat_min) < 2:
+                        str_lat_min = '0' + str_lat_min
 
-                str_lat_sec = str(lat_sec)
-                while len(str_lat_sec) < 2:
-                    str_lat_sec = '0' + str_lat_sec
+                    str_lat_sec = str(lat_sec)
+                    while len(str_lat_sec) < 2:
+                        str_lat_sec = '0' + str_lat_sec
 
-                lat_str = lat_dir + str_lat_deg + str_lat_min + str_lat_sec
+                    lat_str = lat_dir + str_lat_deg + str_lat_min + str_lat_sec
 
-                lon_dec = airport.lon
-                if lon_dec >= 0:
-                    lon_dir = "E"
-                else:
-                    lon_dir = "W"
-                    lon_dec = -lon_dec
+                    lon_dec = airport.lon
+                    if lon_dec >= 0:
+                        lon_dir = "E"
+                    else:
+                        lon_dir = "W"
+                        lon_dec = -lon_dec
 
-                lon_deg = int(lon_dec)
-                lon_temp = (lon_dec-lon_deg)*60
-                lon_min = int(lon_temp)
-                lon_sec = int(round((lon_temp-lon_min)*60))
+                    lon_deg = int(lon_dec)
+                    lon_temp = (lon_dec-lon_deg)*60
+                    lon_min = int(lon_temp)
+                    lon_sec = int(round((lon_temp-lon_min)*60))
 
-                str_lon_deg = str(lon_deg)
-                while len(str_lon_deg) < 3:
-                    str_lon_deg = '0' + str_lon_deg
+                    str_lon_deg = str(lon_deg)
+                    while len(str_lon_deg) < 3:
+                        str_lon_deg = '0' + str_lon_deg
 
-                str_lon_min = str(lon_min)
-                while len(str_lon_min) < 2:
-                    str_lon_min = '0' + str_lon_min
+                    str_lon_min = str(lon_min)
+                    while len(str_lon_min) < 2:
+                        str_lon_min = '0' + str_lon_min
 
-                str_lon_sec = str(lon_sec)
-                while len(str_lon_sec) < 2:
-                    str_lon_sec = '0' + str_lon_sec
+                    str_lon_sec = str(lon_sec)
+                    while len(str_lon_sec) < 2:
+                        str_lon_sec = '0' + str_lon_sec
 
-                lon_str = lon_dir + str_lon_deg + str_lon_min + str_lon_sec
+                    lon_str = lon_dir + str_lon_deg + str_lon_min + str_lon_sec
 
-                line = airport.code + " " + lat_str + " " + lon_str + "\n"
-                file.write(line)
+                    line = airport.code + " " + lat_str + " " + lon_str + "\n"
+                    file.write(line)
 
-            i += 1
+                i += 1
 
         return 0
 
@@ -197,3 +198,65 @@ def RemoveAirport(airports, code):
         i += 1
 
     return -1
+
+def PlotAirports(airports):
+
+    count_schengen = 0
+    count_no_schengen = 0
+
+    i = 0
+    while i < len(airports):
+        if airports[i].schengen:
+            count_schengen += 1
+        else:
+            count_no_schengen += 1
+        i += 1
+
+    x_label = ['Airports']
+    plt.bar(x_label, [count_schengen], color='blue', label='Schengen')
+    plt.bar(x_label, [count_no_schengen], bottom=[count_schengen] , color='red', label='No Schengen')
+    plt.title('Schengen airports')
+    plt.ylabel = ['Count']
+    plt.ylim(0, count_schengen + count_no_schengen + 10)
+    plt.legend()
+    plt.show()
+
+def MapAirports(airports, filename):
+    if not airports:
+        return -1
+    try:
+        with open(filename, 'w') as file:
+            file.write ('<?xml version="1.0" encoding="UTF-8"?>\n')
+            file.write ('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
+            file.write ('<Document>\n')
+
+            i = 0
+            while i < len(airports):
+
+                if airports[i].schengen:
+                    pin_color = "ffff0000"
+                else:
+                    pin_color = "ff0000ff"
+
+                airport = airports[i]
+                file.write ('  <Placemark>\n')
+                file.write ('    <name>' + airport.code + '</name>\n')
+                file.write ('    <Style>')
+                file.write ('      <IconStyle>\n')
+                file.write ('        <color>' + pin_color + '</color>\n')
+                file.write ('      </IconStyle>\n')
+                file.write ('    </Style>')
+                file.write ('    <Point>\n')
+
+                coords = str(airport.lon) + "," + str(airport.lat)
+                file.write ('      <coordinates>' + coords + '</coordinates>\n')
+                file.write ('    </Point>\n')
+                file.write('  </Placemark>\n')
+
+                i += 1
+            file.write ('</Document>\n')
+            file.write ('</kml>\n')
+
+        return 0
+    except IOError:
+        return -1

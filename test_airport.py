@@ -1,12 +1,14 @@
 from airport import *
-airportadd = Airport ("EGLL", 41.297445, 2.0832941)
-airportremove = "BIKF"
+airportadd = Airport ("LKHK", 41.297445, 2.0832941)
+airportremove = ""
 """SetSchengen(airport)
 PrintAirport (airport)"""
 
 filename = "Airports.txt"
 filename2 = "SchengenAirports.txt"
 airports_list = LoadAirports (filename)
+RemoveAirport(airports_list, airportremove)
+"""AddAirport(airports_list, airportadd)"""
 
 i = 0
 while i < len(airports_list):
@@ -14,6 +16,6 @@ while i < len(airports_list):
     i += 1
 
 SaveSchengenAirports (airports_list, filename2)
-AddAirport(airports_list, airportadd)
-RemoveAirport(airports_list, airportremove)
+PlotAirports(airports_list)
+MapAirports(airports_list, "Mapa.kml")
 
