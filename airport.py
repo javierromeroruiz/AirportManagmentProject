@@ -46,16 +46,16 @@ def PrintAirport(airport):
     print("Longitude:", airport.lon)
     print("Schengen:", airport.schengen)
 
-def LoadAirports(airports):
+def LoadAirports(filename):
 
     # Funcion que carga una lista de codigos y coordenadas de un archivo
 
-    if not os.path.exists(airports): # Detecta si el archivo existe dentro de la carpeta del proyecto
+    if not os.path.exists(filename): # Detecta si el archivo existe dentro de la carpeta del proyecto
         return []
 
     airports = []
 
-    with open(airports, 'r') as file: #Carga el archivo en question
+    with open(filename, 'r') as file: #Carga el archivo en question
 
         line = file.readline()
 
@@ -101,3 +101,99 @@ def LoadAirports(airports):
 
     return airports
 
+def SaveSchengenAirports(airports, filename):
+
+    if not airports:
+        return -1
+
+    try:
+        with open(filename, 'w') as file:
+            file.write ('CODE LAT LON')
+
+        i = 0
+        while i < len(airports):
+            airport = airports[i]
+
+            if airport.schengen:
+                lat_dec = airport.lat
+                if lat_dec >= 0:
+                    lat_dir = "N"
+                else:
+                    lat_dir = "S"
+                    lat_dec = -lat_dec
+
+                lat_deg = int(lat_dec)
+                lat_temp = (lat_dec-lat_deg)*60
+                lat_min = int(lat_temp)
+                lat_sec = int(round((lat_temp-lat_min)*60))
+
+                str_lat_deg = str(lat_deg)
+                while len(str_lat_deg) < 2:
+                    str_lat_deg = '0' + str_lat_deg
+
+                str_lat_min = str(lat_min)
+                while len(str_lat_min) < 2:
+                    str_lat_min = '0' + str_lat_min
+
+                str_lat_sec = str(lat_sec)
+                while len(str_lat_sec) < 2:
+                    str_lat_sec = '0' + str_lat_sec
+
+                lat_str = lat_dir + str_lat_deg + str_lat_min + str_lat_sec
+
+                lon_dec = airport.lon
+                if lon_dec >= 0:
+                    lon_dir = "E"
+                else:
+                    lon_dir = "W"
+                    lon_dec = -lon_dec
+
+                lon_deg = int(lon_dec)
+                lon_temp = (lon_dec-lon_deg)*60
+                lon_min = int(lon_temp)
+                lon_sec = int(round((lon_temp-lon_min)*60))
+
+                str_lon_deg = str(lon_deg)
+                while len(str_lon_deg) < 3:
+                    str_lon_deg = '0' + str_lon_deg
+
+                str_lon_min = str(lon_min)
+                while len(str_lon_min) < 2:
+                    str_lon_min = '0' + str_lon_min
+
+                str_lon_sec = str(lon_sec)
+                while len(str_lon_sec) < 2:
+                    str_lon_sec = '0' + str_lon_sec
+
+                lon_str = lon_dir + str_lon_deg + str_lon_min + str_lon_sec
+
+                line = airport.code + " " + lat_str + " " + lon_str + "\n"
+                file.write(line)
+
+            i += 1
+
+        return 0
+
+    except IOError:
+        return -1
+
+def AddAirport(airports, airport):
+     i = 0
+     found = False
+     while i < len(airports) and not found:
+         if airports[i].code == airport.code:
+             found = True
+         i += 1
+
+     if not found:
+        airports.append(airport)
+
+def RemoveAirport(airports, code):
+    i = 0
+    while i < len(airports):
+        if airports[i].code == code:
+            airports.pop(i)
+            return 0
+        i += 1
+
+    return -1
