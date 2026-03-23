@@ -1,5 +1,6 @@
 import os #Importamos la libreria OS
 import matplotlib.pyplot as plt
+import matplotlib
 
 class Airport:
 
@@ -224,6 +225,8 @@ def RemoveAirport(airports, code):
         i += 1
 
     return -1
+
+matplotlib.use('TkAgg')
 
 def PlotAirports(airports):
 
