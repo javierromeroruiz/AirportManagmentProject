@@ -104,12 +104,22 @@ def LoadAirports(filename):
 
 def SaveSchengenAirports(airports, filename):
 
+    #Funcion que dada la lista de aeropuertos, de la funcion anterior, crea un archivo nuevo
+    # en el que incluye los aeropuertos Shengen, los coloca en el mismo formato
+    # que el de los de la lista dada
+
     if not airports:
         return -1
 
     try:
         with open(filename, 'w') as file:
             file.write ('CODE LAT LON\n')
+
+            # Este bucle lee los datos guardados en nuestra lista de aeropuertos hasta llegar al final
+            # Si el aeropuerto es Shengen entonces devuelve la latitud y longitud del sur y del oeste a
+            # positivo y pasa los datos de nuevo a grados, minutos y segundos.
+            # Por ultimo los guarda de nuevo como string, y escribe en una linea code-lat-lon como en el
+            # formato original
 
             i = 0
             while i < len(airports):
@@ -179,6 +189,14 @@ def SaveSchengenAirports(airports, filename):
         return -1
 
 def AddAirport(airports, airport):
+
+    #Esta funcion nos sirve para añadir aeropuertos que no están en la lista
+
+    # Este bucle sigue la estructura tipica de search.
+    # Compara el aeropuerto dado con todos los aeropuertos de la lista, si encuentra una coincidencia
+    # entonces el bucle se acaba, sino encuentra la coincidencia añade el nuevo
+    # aeropuerto a la lista.
+
      i = 0
      found = False
      while i < len(airports) and not found:
@@ -190,6 +208,14 @@ def AddAirport(airports, airport):
         airports.append(airport)
 
 def RemoveAirport(airports, code):
+
+    #Esta funcion nos permite eliminar de la lista un aeropuerto dado su codigo
+
+    # Este bucle recorre la lsita buscando el codigo del aeropuerto y cuando
+    # lo eoncuentra lo elimina y pasa a la siguiente linea.
+    # El bucle acaba cuando se acaba la lista puesto que un mismo codigo
+    # podria aparecer varias veces en la misma lista
+
     i = 0
     while i < len(airports):
         if airports[i].code == code:
@@ -201,8 +227,14 @@ def RemoveAirport(airports, code):
 
 def PlotAirports(airports):
 
+    # Esta funcion nos muestra un gráfico de barras con la cantidad de
+    # aeropuertos shengen y no shengen
+
     count_schengen = 0
     count_no_schengen = 0
+
+    # Hacemos un bucle para clasificar todos los aeropuertos de la lista en
+    # Shengen y no Shengen
 
     i = 0
     while i < len(airports):
@@ -211,6 +243,10 @@ def PlotAirports(airports):
         else:
             count_no_schengen += 1
         i += 1
+
+    # Planteamos el grafico de una unica barra donde los valores de no Shengen
+    # empiezan justo encima de los de Shengen, y los distinguimos con dos
+    # colores distintos.
 
     x_label = ['Airports']
     plt.bar(x_label, [count_schengen], color='blue', label='Schengen')
@@ -222,13 +258,24 @@ def PlotAirports(airports):
     plt.show()
 
 def MapAirports(airports, filename):
+
+    # Esta funcion nos permite mostrar en Google Earth lso diferentes
+    # aeropuertos de la lista, distinguiendolos por colores entre
+    # shengen y no shengen
+
     if not airports:
         return -1
     try:
+
+        # Primero crea un archivo en formato KML en modo de escritura para poder modificarlo.
+
         with open(filename, 'w') as file:
             file.write ('<?xml version="1.0" encoding="UTF-8"?>\n')
             file.write ('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
             file.write ('<Document>\n')
+
+        # Utilizamos este bucle para poder asignar un color diferente a los aeropuertos
+        # que son shengen y a los que no.
 
             i = 0
             while i < len(airports):
@@ -237,6 +284,10 @@ def MapAirports(airports, filename):
                     pin_color = "ffff0000"
                 else:
                     pin_color = "ff0000ff"
+
+        # Genera un Placemark en formato KML para cada aeropuerto,
+        # difiniendo su nombre y su posicion geográfica para visualizarlo en
+        #Google Earth
 
                 airport = airports[i]
                 file.write ('  <Placemark>\n')
@@ -254,6 +305,9 @@ def MapAirports(airports, filename):
                 file.write('  </Placemark>\n')
 
                 i += 1
+
+        # Finalmente cierra el documento
+
             file.write ('</Document>\n')
             file.write ('</kml>\n')
 
