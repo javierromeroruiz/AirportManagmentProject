@@ -105,49 +105,51 @@ def map_data():
         messagebox.showwarning("Warning", "No hay aeropuertos que guardar")
 
 
-frame_load = tk.Frame(app)
-frame_load.pack()
+frame_load = tk.Frame(app, bg="light blue")
+frame_load.pack(pady=10)
 
-tk.Label(frame_load, text="Nombre del archivo:").pack()
-archivo_entry = tk.Entry(frame_load)
-archivo_entry.pack()
-tk.Button(frame_load, text="Cargar Aeropuertos", command=load_airports).pack()
+tk.Label(frame_load, text="Nombre del archivo:", bg = "lightblue").grid(row=0 , column=0 , padx=8 , pady=5)
 
-listbox = tk.Listbox(app)
-listbox.pack()
+archivo_entry = tk.Entry(frame_load, width=25)
+archivo_entry.grid(row=0, column=1, padx=8, pady=5)
 
-frame_edit = tk.Frame(app)
-frame_edit.pack()
+tk.Button(frame_load, text="Cargar Aeropuertos", command=load_airports).grid(row=0, column=2, padx=8, pady=5)
 
-tk.Label(frame_edit, text="Codigo ICAO:").pack()
+listbox = tk.Listbox(app, width=70, height=12)
+listbox.pack(pady=10)
+
+frame_edit = tk.Frame(app, bg="light blue")
+frame_edit.pack(pady=15)
+
+tk.Label(frame_edit, text="Codigo ICAO:", bg="light blue").grid(row=0, column=3, padx=10, pady=5)
 code_entry = tk.Entry(frame_edit)
-code_entry.pack()
+code_entry.grid(row=0, column=4, padx=8, pady=5)
 
-tk.Label(frame_edit, text="Lat:").pack()
+tk.Label(frame_edit, text="Lat:", bg="light blue").grid(row=1, column=3, padx=10, pady=5)
 lat_entry = tk.Entry(frame_edit)
-lat_entry.pack()
+lat_entry.grid(row=1, column=4, padx=8, pady=5)
 
-tk.Label(frame_edit, text="Lon:").pack()
+tk.Label(frame_edit, text="Lon:", bg="light blue").grid(row=2, column=3, padx=10, pady=5)
 lon_entry = tk.Entry(frame_edit)
-lon_entry.pack()
+lon_entry.grid(row=2, column=4, padx=8, pady=5)
 
-tk.Button(frame_edit, text="Agregar:", command=add_airport).pack()
+tk.Button(frame_edit, text="Agregar:", command=add_airport).grid(row=1, column=5, padx=8, pady=5)
 
-tk.Label(frame_edit, text="Codigo ICAO:").pack()
+tk.Label(frame_edit, text="Codigo ICAO:", bg="light blue").grid(row=3, column=3, padx=10, pady=7)
 del_entry = tk.Entry(frame_edit)
-del_entry.pack()
-tk.Button(frame_edit, text="Borrar", command=delete_airport).pack()
+del_entry.grid(row=3, column=4, padx=8, pady=7)
+tk.Button(frame_edit, text="Borrar", command=delete_airport).grid(row=3, column=5, padx=8, pady=7)
 
-frame_utils = tk.Frame(app)
-frame_utils.pack()
+frame_utils = tk.Frame(app, bg="light blue")
+frame_utils.pack(pady=15)
 
-tk.Button(frame_utils, text="Poner Schengen", command=apply_schengen).pack()
-tk.Button(frame_utils, text="Grafico de Aeropuertos", command=plot_data).pack()
-tk.Button(frame_utils, text="Mostrar en Google Earth", command=map_data).pack()
+tk.Button(frame_utils, text="Poner Schengen", command=apply_schengen).grid(row=0, column=0, padx=8, pady=5)
+tk.Button(frame_utils, text="Grafico de Aeropuertos", command=plot_data).grid(row=0, column=1, padx=8, pady=5)
+tk.Button(frame_utils, text="Mostrar en Google Earth", command=map_data).grid(row=0, column=2, padx=8, pady=5)
 
-tk.Label(frame_utils, text="Guardar como:").pack()
+tk.Label(frame_utils, text="Guardar como:").grid(row=1, column=0, padx=8, pady=10)
 save_entry = tk.Entry(frame_utils)
-save_entry.pack()
-tk.Button(frame_utils, text="Guardar Aeropuertos Schengen", command=save_airports).pack()
+save_entry.grid(row=1, column=2, padx=8, pady=10)
+tk.Button(frame_utils, text="Guardar Aeropuertos Schengen", command=save_airports).grid(row=2, column=1, padx=8, pady=10)
 
 app.mainloop()
