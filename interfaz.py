@@ -6,6 +6,7 @@ from tkinter import messagebox, filedialog
 airports = []
 
 app = tk.Tk()
+app.title("Interfaz de Aeropuertos")
 
 
 def update_listbox():
