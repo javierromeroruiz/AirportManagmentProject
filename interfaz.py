@@ -1,6 +1,5 @@
 import tkinter as tk
-from airport import Airport, LoadAirports, AddAirport, RemoveAirport, SetSchengen, SaveSchengenAirports, PlotAirports, \
-    MapAirports
+from airport import Airport, LoadAirports, AddAirport, RemoveAirport, SetSchengen, SaveSchengenAirports, PlotAirports, MapAirports
 from tkinter import messagebox, filedialog
 
 airports = []
@@ -38,7 +37,7 @@ def add_airport():
         lat = float(lat_entry.get())
         lon = float(lon_entry.get())
 
-        if len(code) == 4:
+        if len(code) == 4 and code.isalpha():
             new_airport = Airport(code, lat, lon)
             AddAirport(airports, new_airport)
             update_listbox()

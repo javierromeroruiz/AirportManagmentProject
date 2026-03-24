@@ -30,7 +30,12 @@ def IsSchengenAirport(code):
     ]
 
     prefix = code[:2]
-    return prefix in schengen_prefixes
+    i = 0
+    while i < len(schengen_prefixes):
+        if prefix == schengen_prefixes[i]:
+            return prefix
+        else:
+            i += 1
 
 def SetSchengen(airport):
 
@@ -105,7 +110,7 @@ def LoadAirports(filename):
 
 def SaveSchengenAirports(airports, filename):
 
-    #Funcion que dada la lista de aeropuertos, de la funcion anterior, crea un archivo nuevo
+    # Funcion que dada la lista de aeropuertos, de la funcion anterior, crea un archivo nuevo
     # en el que incluye los aeropuertos Shengen, los coloca en el mismo formato
     # que el de los de la lista dada
 
