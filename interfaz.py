@@ -153,3 +153,5 @@ save_entry.grid(row=1, column=2, padx=8, pady=10)
 tk.Button(frame_utils, text="Guardar Aeropuertos Schengen", command=save_airports).grid(row=2, column=1, padx=8, pady=10)
 
 app.mainloop()
+
+print("Test")
