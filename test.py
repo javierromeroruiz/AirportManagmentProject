@@ -1,5 +1,3 @@
-import aircraft
-from aircraft import LoadArrivals, PlotArrivals
+from aircraft import PlotFlightsType, LoadArrivals
 
-PlotArrivals(LoadArrivals('Arrivals.txt'))
-
+PlotFlightsType(LoadArrivals('Arrivals.txt'))
