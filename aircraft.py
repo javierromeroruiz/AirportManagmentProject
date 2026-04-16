@@ -155,3 +155,110 @@ def PlotFlightsType (aircraft):
 
     return 0
 
+
+def LoadAirports (filename):
+    airports_db = {}
+    if os.path.exists(filename):
+        f = open(filename, 'r')
+        f.readline()
+        for line in f:
+            parts = line.strip().split()
+            if len(parts) == 3:
+                code = parts[0]
+                lat = (parts[1])
+                lon = (parts[2])
+
+                deg_lat = int(lat[1:3])
+                min_lat = int(lat[3:5])
+                sec_lat = int(lat[5:7])
+
+                lat_val = deg_lat + min_lat/60 + sec_lat/3600
+                if lat[0] == "S":
+                    lat_val = -lat_val
+
+                deg_lon = int(lon[1:4])
+                min_lon = int(lon[4:6])
+                sec_lon = int(lon[6:8])
+
+                lon_val = deg_lon + min_lon/60 + sec_lon/3600
+                if lon[0] == "W":
+                    lon_val = -lon_val
+
+                airports_db[code] = (lat_val, lon_val)
+
+        f.close()
+    return airports_db
+
+
+def MapFlights (aircraft, airports_db):
+    schengen_prefixes = [
+        'LO', 'EB', 'LK', 'LC', 'EK', 'EE', 'EF', 'LF', 'ED', 'LG', 'EH', 'LH',
+        'BI', 'LI', 'EV', 'EY', 'EL', 'LM', 'EN', 'EP', 'LP', 'LZ', 'LJ', 'LE', 'ES', 'LS'
+    ]
+    if "LEBL" not in airports_db:
+        return -1
+
+    lat_dest, lon_dest = airports_db["LEBL"]
+
+    f = open("flights.kml", "w")
+
+    f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
+    f.write('<kml xmlns=''http://www.opengis.net/kml/2.2''>\n')
+    f.write("<Document>\n")
+
+    i = 0
+    while i < len(aircraft):
+        ac = aircraft[i]
+        orig = ac.origin_airport
+
+        if orig in airports_db:
+            lat_orig, lon_orig = airports_db[orig]
+
+            codigo = str(orig[:2])
+            if codigo in schengen_prefixes:
+                color = "ffff0000"
+            else:
+                color = "ff0000ff"
+
+            f.write("   <Placemark>\n")
+            f.write("   <name>" + str(ac.aircraft_id) + "</name>\n")
+            f.write("   <Style><LineStyle><color>" + color + "</color><width>2<width></LineStyle></Style>\n")
+            f.write("   <LineString>\n")
+            f.write("   <coordinates>\n")
+
+            f.write("   " + str(lon_orig) + "," + str(lat_orig) + ",0 ")
+            f.write(str(lon_dest) + "," + str(lat_dest) + ",0\n")
+            f.write("   </coordinates>\n")
+            f.write("   </LineString>\n")
+            f.write("   </Placemark>\n")
+
+        i = i + 1
+    f.write("</Document>\n")
+    f.write("</kml>\n")
+    f.close()
+
+    return 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

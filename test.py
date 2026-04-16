@@ -1,3 +1,13 @@
-from aircraft import PlotFlightsType, LoadArrivals
+from aircraft import LoadArrivals, LoadAirports, MapFlights, PlotFlightsType
 
-PlotFlightsType(LoadArrivals('Arrivals.txt'))
+vuelos = LoadArrivals('Arrivals.txt')
+db_aeropuertos = LoadAirports('Airports.txt')
+
+resultado = MapFlights(vuelos, db_aeropuertos)
+
+if resultado == 0:
+    print("OK")
+else:
+    print("ERROR")
+
+PlotFlightsType(vuelos)
