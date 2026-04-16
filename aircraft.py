@@ -203,7 +203,7 @@ def MapFlights (aircraft, airports_db):
     f = open("flights.kml", "w")
 
     f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
-    f.write('<kml xmlns=''http://www.opengis.net/kml/2.2''>\n')
+    f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
     f.write("<Document>\n")
 
     i = 0
