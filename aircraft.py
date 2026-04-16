@@ -222,7 +222,7 @@ def MapFlights (aircraft, airports_db):
 
             f.write("   <Placemark>\n")
             f.write("   <name>" + str(ac.aircraft_id) + "</name>\n")
-            f.write("   <Style><LineStyle><color>" + color + "</color><width>2<width></LineStyle></Style>\n")
+            f.write("   <Style><LineStyle><color>" + color + "</color><width>2</width></LineStyle></Style>\n")
             f.write("   <LineString>\n")
             f.write("   <coordinates>\n")
 
