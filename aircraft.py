@@ -287,5 +287,5 @@ if __name__ == "__main__":
     SaveFlights(aircraft, "salida_test.txt")
     MapFlights(aircraft, airports_db)
 
-    specials = LongDistanceArrivals(aircraft, airports_db)
-    print("Airplanes that require special inspection (>2000km):", len(specials))
+    especiales = LongDistanceArrivals(aircraft, airports_db)
+    print("Vuelos>2000km: ", len(especiales))
