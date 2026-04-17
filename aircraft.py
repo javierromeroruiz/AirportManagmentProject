@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 import matplotlib.pyplot as plt
+import math
 
 class Aircraft:
     def __init__(self, aircraft_id,airline_company,origin_airport,time_of_landing ):
@@ -240,25 +241,51 @@ def MapFlights (aircraft, airports_db):
     return 0
 
 
+def LongDistanceArrivals(aircraft, airports_db):
+    long_distance_list = []
+
+    if "LEBL" not in airports_db:
+        return long_distance_list
+
+    lat_dest, lon_dest = airports_db["LEBL"]
+    R = 6371.0
+
+    i = 0
+    while i < len(aircraft):
+        ac = aircraft[i]
+        orig = ac.origin_airport
+
+        if orig in airports_db:
+            lat_orig, lon_orig = airports_db[orig]
+
+            lat_rad_orig = lat_orig * math.pi/180
+            lat_rad_dest = lat_dest * math.pi/180
+            diff_lat = (lat_dest - lat_orig) * math.pi/180
+            diff_lon = (lon_dest - lon_orig) * math.pi/180
+
+            a = math.sin(diff_lat/2)**2 + math.cos(lat_rad_orig) * math.cos(lat_rad_dest) * math.sin(diff_lon/2)**2
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+            dist = R * c
+
+            if dist > 2000:
+                long_distance_list.append(ac)
+
+        i = i + 1
+
+    return long_distance_list
 
 
 
+if __name__ == "__main__":
+    aircraft = LoadArrivals("Arrivals.txt")
+    airports_db = LoadAirports("Airports.txt")
 
+    PlotArrivals(aircraft)
+    PlotAirlines(aircraft)
+    PlotFlightsType(aircraft)
 
+    SaveFlights(aircraft, "salida_test.txt")
+    MapFlights(aircraft, airports_db)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    specials = LongDistanceArrivals(aircraft, airports_db)
+    print("Airplanes that require special inspection (>2000km):", len(specials))
