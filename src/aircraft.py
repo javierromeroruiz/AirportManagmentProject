@@ -56,7 +56,7 @@ def PlotArrivals(aircraft):
 
 
     plt.tight_layout()
-    plt.savefig('arrivals_distribution.png')
+    plt.savefig('../output/arrivals_distribution.png')
     plt.show()
 
 def SaveFlights (aircraft, filename):
@@ -119,7 +119,7 @@ def PlotAirlines (aircraft):
     plt.xticks(rotation=45)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
-    plt.savefig('cantidad_airlines.png')
+    plt.savefig('../output/cantidad_airlines.png')
     plt.show()
 
     return 0
@@ -201,7 +201,10 @@ def MapFlights (aircraft, airports_db):
 
     lat_dest, lon_dest = airports_db["LEBL"]
 
-    f = open("flights.kml", "w")
+    if not os.path.exists("output"):
+        os.makedirs("output")
+
+    f = open("output/flights.kml", "w")
 
     f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
     f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
@@ -277,8 +280,8 @@ def LongDistanceArrivals(aircraft, airports_db):
 
 
 if __name__ == "__main__":
-    aircraft = LoadArrivals("Arrivals.txt")
-    airports_db = LoadAirports("Airports.txt")
+    aircraft = LoadArrivals("../data/Arrivals.txt")
+    airports_db = LoadAirports("../data/Airports.txt")
 
     PlotArrivals(aircraft)
     PlotAirlines(aircraft)

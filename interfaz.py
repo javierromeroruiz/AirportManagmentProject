@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog
 
-from airport import Airport, LoadAirports, AddAirport, RemoveAirport, SetSchengen, SaveSchengenAirports, PlotAirports, \
+from src.airport import Airport, LoadAirports, AddAirport, RemoveAirport, SetSchengen, SaveSchengenAirports, PlotAirports, \
     MapAirports
 
-from aircraft import LoadArrivals, PlotArrivals, SaveFlights, PlotAirlines, PlotFlightsType, \
+from src.aircraft import LoadArrivals, PlotArrivals, SaveFlights, PlotAirlines, PlotFlightsType, \
     LoadAirports as LoadAirportsDB, MapFlights, LongDistanceArrivals
 
 airports = []
@@ -248,7 +248,6 @@ tk.Button(frame_aircraft, text="Gráfico Schengen/No", command=plot_flights_type
 
 tk.Button(frame_aircraft, text="Guardar Vuelos a TXT", command=save_flights_data).grid(row=3, column=0, padx=8, pady=10)
 tk.Button(frame_aircraft, text="Mapear Vuelos a LEBL", command=map_flights_data).grid(row=3, column=1, padx=8, pady=10)
-tk.Button(frame_aircraft, text="Consultar Vuelos > 2000km", command=show_long_distance).grid(row=3, column=2, padx=8,
-                                                                                             pady=10)
+tk.Button(frame_aircraft, text="Consultar Vuelos > 2000km", command=show_long_distance).grid(row=3, column=2, padx=8, pady=10)
 
 app.mainloop()
