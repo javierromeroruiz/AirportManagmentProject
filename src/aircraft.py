@@ -246,6 +246,8 @@ def MapFlights (aircraft, airports_db):
 
 def LongDistanceArrivals(aircraft, airports_db):
     long_distance_list = []
+    total_co2_kg = 0.0
+    cont_flights = 0
 
     if "LEBL" not in airports_db:
         return long_distance_list
@@ -269,14 +271,22 @@ def LongDistanceArrivals(aircraft, airports_db):
             a = math.sin(diff_lat/2)**2 + math.cos(lat_rad_orig) * math.cos(lat_rad_dest) * math.sin(diff_lon/2)**2
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
             dist = R * c
+            total_co2_kg = (18 * dist) + total_co2_kg
+            cont_flights = cont_flights + 1
 
             if dist > 2000:
                 long_distance_list.append(ac)
 
         i = i + 1
 
-    return long_distance_list
+    total_tons = total_co2_kg/1000
+    med_tons = 0
+    if cont_flights > 0:
+        med_tons = total_tons / cont_flights  # Dividimos el TOTAL entre el NÚMERO de vuelos
+    else:
+        med_tons = 0.0
 
+    return long_distance_list, total_tons, med_tons
 
 
 if __name__ == "__main__":
@@ -287,8 +297,8 @@ if __name__ == "__main__":
     PlotAirlines(aircraft)
     PlotFlightsType(aircraft)
 
-    SaveFlights(aircraft, "salida_test.txt")
-    MapFlights(aircraft, airports_db)
+    vuelos_largos, co2, med_co2 = LongDistanceArrivals(aircraft, airports_db)
 
-    especiales = LongDistanceArrivals(aircraft, airports_db)
-    print("Vuelos>2000km: ", len(especiales))
+    print(f"Vuelos > 2000km detectados: {len(vuelos_largos)}")
+    print(f"Impacto ambiental total: {co2:.2f} t/CO2")
+    print(f"Impacto medio por vuelo: {med_co2:.2f} t/CO2")
