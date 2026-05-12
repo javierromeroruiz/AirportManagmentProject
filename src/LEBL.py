@@ -1,3 +1,5 @@
+import os
+
 class BarcelonaAP:
     def __init__(self, code):
         self.code = code
@@ -32,6 +34,38 @@ def SetGates (area, init_gate, end_gate, prefix):
         area.gate.append(gate)
         i += 1
     return 0
+
+def LoadAirlines (terminal: Terminal, t_name):
+
+    filename = f"{t_name}_Airlines.txt"
+
+    if not os.path.exists(filename):
+        print("File not found")
+        return -1
+
+    try:
+        terminal.airlines = []
+        with open(filename, "r") as file:
+
+            line = file.readline()
+            while line:
+                parts = line.split("\t")
+                if len(parts) >= 2:
+                    icao_code = parts[-1].strip()
+                    terminal.airlines.append(icao_code)
+                else:
+                    parts = line.split()
+                    if parts:
+                        terminal.airlines.append(parts[-1].strip())
+                line = file.readline()
+    except FileNotFoundError:
+        return -1
+
+    return 0
+
+
+
+
 
 
 
