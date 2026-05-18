@@ -1,5 +1,8 @@
 import os
 
+from airport import IsSchengenAirport
+
+
 class BarcelonaAP:
     def __init__(self, code):
         self.code = code
@@ -188,16 +191,17 @@ def AssignaGate (bcn, aircraft):
     terminal_name = SearchTerminal(bcn,aircraft.airline_company)
     if terminal_name == "":
         return ""
+    aircraft_schengen = IsSchengenAirport(aircraft.origin_airport)
 
     i = 0
     while i < len(bcn.terminal):
         terminal = bcn.terminal[i]
-        if terminal.airlines == terminal_name:
+        if terminal.name == terminal_name:
 
             j= 0
             while j < len(terminal.boarding_area):
                 area = terminal.boarding_area[j]
-                if area.schengen == aircraft.schengen:
+                if area.schengen == aircraft_schengen:
                     k = 0
                     while k < len(area.gate):
                         gate = area.gate[k]
