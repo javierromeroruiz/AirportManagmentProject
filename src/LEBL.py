@@ -163,6 +163,53 @@ def GateOccupancy(bcn):
 
     return gate_info
 
+def IsAirlineInTerminal (terminal,name):
+    if name == "":
+        return False
+    if terminal.airlines == []:
+        return False
+    i = 0
+    while i < len(terminal.airlines):
+        if terminal.airlines[i] == name:
+            return True
+        i += 1
+    return False
+
+def SearchTerminal (bcn,name):
+    i = 0
+    while i< len(bcn.terminal):
+        terminal = bcn.terminal[i]
+        if IsAirlineInTerminal(terminal,name):
+            return terminal.name
+        i += 1
+    return ""
+
+def AssignaGate (bcn, aircraft):
+    terminal_name = SearchTerminal(bcn,aircraft.airline_company)
+    if terminal_name == "":
+        return ""
+
+    i = 0
+    while i < len(bcn.terminal):
+        terminal = bcn.terminal[i]
+        if terminal.airlines == terminal_name:
+
+            j= 0
+            while j < len(terminal.boarding_area):
+                area = terminal.boarding_area[j]
+                if area.schengen == aircraft.schengen:
+                    k = 0
+                    while k < len(area.gate):
+                        gate = area.gate[k]
+                        if gate.occupancy == False:
+                            gate.occupancy = True
+                            gate.aircraft_id = aircraft.aircraft_id
+
+                            return gate.name
+                        k +=1
+                j +=1
+        i+=1
+    return ""
 
 
 
