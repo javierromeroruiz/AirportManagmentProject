@@ -64,9 +64,104 @@ def LoadAirlines (terminal: Terminal, t_name):
     return 0
 
 
+def LoadAirportStructure(filename):
+
+    if not os.path.exists(filename):
+        return -1
+
+    with open(filename, "r", encoding="utf-8") as file:
+        content = file.read()
+
+    tokens = content.split()
+    if not tokens:
+        return -1
 
 
+    icao_code = tokens[0]
+    bcn = BarcelonaAP(icao_code)
 
+    current_terminal = None
+    i = 0
+
+    while i < len(tokens):
+        if tokens[i] == "Terminal" and i + 1 < len(tokens):
+            t_name = tokens[i + 1]
+            current_terminal = Terminal(t_name)
+
+            LoadAirlines(current_terminal, t_name)
+            bcn.terminal.append(current_terminal)
+
+            i += 2
+            continue
+
+        if tokens[i] == "Area" and i + 1 < len(tokens):
+            area_name = tokens[i + 1]
+            i += 2
+
+            is_schengen = True
+            if i < len(tokens):
+                if tokens[i] == "non-Schengen":
+                    is_schengen = False
+                    i += 1
+                elif tokens[i] == "Schengen":
+                    is_schengen = True
+                    i += 1
+
+            while i < len(tokens) and tokens[i] != "Gates":
+                i += 1
+
+            if i < len(tokens) and tokens[i] == "Gates":
+                i += 1
+                nums = []
+
+                while i < len(tokens) and (tokens[i].isdigit() or "-" in tokens[i]):
+                    if "-" in tokens[i]:
+                        parts = tokens[i].split("-")
+                        for p in parts:
+                            if p.isdigit(): nums.append(int(p))
+                    elif tokens[i].isdigit():
+                        nums.append(int(tokens[i]))
+                    i += 1
+
+                if len(nums) >= 2:
+                    init_gate = nums[0]
+                    end_gate = nums[-1]
+                elif len(nums) == 1:
+                    init_gate = nums[0]
+                    end_gate = nums[0]
+                else:
+                    init_gate = 1
+                    end_gate = 1
+
+                area = BoardingArea(area_name, is_schengen)
+
+                prefix = f"{current_terminal.name}BA{area_name}G"
+
+                SetGates(area, init_gate, end_gate + 1, prefix)
+
+                if current_terminal:
+                    current_terminal.boarding_area.append(area)
+            continue
+
+        i += 1
+
+    return bcn
+
+
+def GateOccupancy(bcn):
+
+    gate_info = []
+
+    for terminal in bcn.terminal:
+        for area in terminal.boarding_area:
+            for gate in area.gate:
+                gate_info.append({
+                    "name": gate.name,
+                    "status": "Occupied" if gate.occupancy else "Free",
+                    "aircraft_id": gate.aircraft_id
+                })
+
+    return gate_info
 
 
 
