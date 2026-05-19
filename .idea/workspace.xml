@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="6fffe5a9-235b-4def-9d6e-16dbb495699a" name="Changes" comment="a" />
+    <list default="true" id="9924af4c-ed48-4fea-ab59-1a99346ab86c" name="Changes" comment="Funciones Aitana">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LEBL.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LEBL.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,163 +28,87 @@
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
     &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;asoriano14&quot;
+    &quot;assignee&quot;: &quot;asimonlazaro-hub&quot;
   }
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/javierromeroruiz/AirportManagmentProject.git&quot;,
-    &quot;accountId&quot;: &quot;9760de87-7224-49a9-8144-5dd3b67c217c&quot;
+    &quot;accountId&quot;: &quot;9f2201c4-da9b-4e7e-87ed-775dd889b871&quot;
   }
 }</component>
-  <component name="McpProjectServerCommands">
-    <commands />
-    <urls />
-  </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 2
+  &quot;associatedIndex&quot;: 3
 }</component>
-  <component name="ProjectId" id="3BOMxJPybp9LtvCIdNIgmzYfI0A" />
+  <component name="ProjectId" id="3BONvrvSzCcfUiYCS7mvDVEglPj" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.aircraft.executor&quot;: &quot;Run&quot;,
-    &quot;Python.interfaz.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;full.screen.before.presentation.mode&quot;: &quot;false&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Jordi Soriano/PycharmProjects/AirportManagmentProject&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-  },
-  &quot;keyToStringList&quot;: {
-    &quot;ChangesTree.GroupingKeys&quot;: [
-      &quot;directory&quot;,
-      &quot;repository&quot;
-    ]
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.aircraft.executor": "Run",
+    "Python.interfaz.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.test_airport.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Version-3",
+    "ignore.virus.scanning.warn.message": "true",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Jordi Soriano\PycharmProjects\AirportManagmentProject\src" />
-    </key>
-  </component>
-  <component name="RunManager">
-    <configuration name="aircraft" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AirportManagmentProject" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="RUN_TOOL" value="" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/aircraft.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.aircraft" />
-      </list>
-    </recent_temporary>
-  </component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-2653e85de345-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.31033.139" />
+        <option value="bundled-python-sdk-4762d8aabb82-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.30387.173" />
       </set>
     </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="6fffe5a9-235b-4def-9d6e-16dbb495699a" name="Changes" comment="" />
-      <created>1774355908753</created>
+      <changelist id="9924af4c-ed48-4fea-ab59-1a99346ab86c" name="Changes" comment="" />
+      <created>1774356389407</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1774355908753</updated>
-      <workItem from="1774355909956" duration="176000" />
-      <workItem from="1774356107538" duration="521000" />
-      <workItem from="1774591321705" duration="13000" />
+      <updated>1774356389407</updated>
     </task>
-    <task id="LOCAL-00001" summary="a">
+    <task id="LOCAL-00001" summary="h">
       <option name="closed" value="true" />
-      <created>1774356171215</created>
+      <created>1774356570507</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1774356171216</updated>
+      <updated>1774356570507</updated>
     </task>
-    <task id="LOCAL-00002" summary="a">
+    <task id="LOCAL-00002" summary="aircraft">
       <option name="closed" value="true" />
-      <created>1776363700805</created>
+      <created>1776159004602</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1776363700805</updated>
+      <updated>1776159004602</updated>
     </task>
-    <task id="LOCAL-00003" summary="a">
+    <task id="LOCAL-00003" summary="Funciones Aitana">
       <option name="closed" value="true" />
-      <created>1776364277372</created>
+      <created>1776265193752</created>
       <option name="number" value="00003" />
       <option name="presentableId" value="LOCAL-00003" />
       <option name="project" value="LOCAL" />
-      <updated>1776364277372</updated>
+      <updated>1776265193752</updated>
     </task>
-    <task id="LOCAL-00004" summary="a">
+    <task id="LOCAL-00004" summary="Funciones Aitana">
       <option name="closed" value="true" />
-      <created>1776365124023</created>
+      <created>1779134003086</created>
       <option name="number" value="00004" />
       <option name="presentableId" value="LOCAL-00004" />
       <option name="project" value="LOCAL" />
-      <updated>1776365124023</updated>
+      <updated>1779134003086</updated>
     </task>
-    <task id="LOCAL-00005" summary="a">
-      <option name="closed" value="true" />
-      <created>1776422765766</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1776422765766</updated>
-    </task>
-    <task id="LOCAL-00006" summary="a">
-      <option name="closed" value="true" />
-      <created>1776423137196</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1776423137196</updated>
-    </task>
-    <option name="localTasksCounter" value="7" />
+    <option name="localTasksCounter" value="5" />
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -198,7 +122,9 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="a" />
-    <option name="LAST_COMMIT_MESSAGE" value="a" />
+    <MESSAGE value="h" />
+    <MESSAGE value="aircraft" />
+    <MESSAGE value="Funciones Aitana" />
+    <option name="LAST_COMMIT_MESSAGE" value="Funciones Aitana" />
   </component>
 </project>
