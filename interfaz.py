@@ -2,22 +2,27 @@ import tkinter as tk
 from tkinter import messagebox, filedialog, ttk
 import os
 
+# Imports
 from src.airport import Airport, LoadAirports, AddAirport, RemoveAirport, SetSchengen, SaveSchengenAirports, PlotAirports, \
     MapAirports
 
 from src.aircraft import LoadArrivals, PlotArrivals, SaveFlights, PlotAirlines, PlotFlightsType, \
     LoadAirports as LoadAirportsDB, MapFlights, LongDistanceArrivals
 
+from src.LEBL import LoadAirportStructure, GateOccupancy, AssignGate
+
+# Variables
 airports = []
 aircrafts = []
 airports_db = {}
+bcn_airport = None # Almacena el objeto 'BarcelonaAP' de la Versión 3
 
 app = tk.Tk()
 app.title("Gestor de Aeropuertos y Vuelos")
 
-# --- Centrar la ventana inicialmente ---
+# --- Configuración y Centrado de Ventana ---
 window_width = 1050
-window_height = 700
+window_height = 750
 screen_width = app.winfo_screenwidth()
 screen_height = app.winfo_screenheight()
 x_cordinate = int((screen_width/2) - (window_width/2))
@@ -42,6 +47,33 @@ def update_listbox():
         texto = f"{a.code:<6} | Lat: {a.lat:<8} | Lon: {a.lon:<8} | {schengen_status}"
         listbox.insert(tk.END, texto)
         i += 1
+
+# Nueva función lógica añadida
+def update_gates_listbox():
+    listbox.delete(0, tk.END)
+    if not bcn_airport:
+        messagebox.showwarning("Warning", "Primero debes cargar la estructura de LEBL.")
+        return
+
+    # Extraemos estado
+    ocupacion = GateOccupancy(bcn_airport)
+    if not ocupacion:
+        listbox.insert(tk.END, "No se encontraron puertas cargadas en la estructura.")
+        return
+    i = 0
+    while i < len(ocupacion):
+        puerta_dict = ocupacion[i]
+        puerta = puerta_dict["name"]
+        estado = puerta_dict["status"]
+        avion = puerta_dict["aircraft_id"]
+
+        if estado == "Occupied" or estado == "Ocupada":
+            listbox.insert(tk.END, f"Puerta: {puerta:<12}   |   [OCUPADA] -> Avión: {avion}")
+        else:
+            listbox.insert(tk.END, f"Puerta: {puerta:<12}    |   [LIBRE]")
+        i += 1
+
+
 
 def load_airports():
     global airports, airports_db
@@ -137,6 +169,7 @@ def plot_arrivals_data():
     else:
         messagebox.showwarning("Warning", "Primero debes cargar los vuelos (Arrivals).")
 
+# --- Controladores de gráficos estadísticos ---
 def plot_airlines_data():
     if aircrafts:
         PlotAirlines(aircrafts)
@@ -183,6 +216,43 @@ def show_long_distance():
         messagebox.showwarning("Warning", "Debes cargar los vuelos Y los aeropuertos primero.")
 
 
+# --- Gestión estructura LEBL ---
+def load_airports_estructure_ui():
+    global bcn_airport
+    filename = structure_entry.get()
+    result = LoadAirportStructure(filename)
+    if result != -1 and result is not None:
+        bcn_airport = result
+        update_gates_listbox()
+        messagebox.showinfo("Info", "Estructura cargada correctamente.")
+    else:
+        messagebox.showerror("Error", "No se pudo cargar el archivo.")
+
+
+def assign_gates_ui():
+    global bcn_airport, aircrafts
+    if not bcn_airport:
+        messagebox.showwarning("Warning", "Primero debes cargar la estructura del aeropuerto.")
+        return
+    if not aircrafts:
+        messagebox.showwarning("Warning", "No hay aviones cargados para asignar.")
+        return
+
+    exitos = 0
+    fallidos = 0
+    i = 0
+    while i < len(aircrafts):
+        gate_assigned = AssignGate(bcn_airport, aircrafts[i])
+        if gate_assigned != "":
+            exitos += 1
+        else:
+            fallidos += 1
+        i += 1
+
+    update_gates_listbox()
+    messagebox.showinfo("Asignación", f"Proceso terminado.\nPuertas asignadas: {exitos}\nSin espacios: {fallidos}.")
+
+
 # ================= INTERFAZ GRÁFICA (UI) MEJORADA =================
 
 # Contenedor principal
@@ -195,7 +265,7 @@ left_panel = ttk.Frame(main_container)
 left_panel.pack(side="left", fill="y", padx=(0, 15))
 
 # Panel derecho (Visualización). Le decimos que se expanda para llenar todo lo demás (expand=True)
-right_panel = ttk.LabelFrame(main_container, text=" Vista de Aeropuertos en Memoria ", padding=10)
+right_panel = ttk.LabelFrame(main_container, text=" Vista de Datos en Memoria (Aeropuertos / Puertas) ", padding=10)
 right_panel.pack(side="right", fill="both", expand=True)
 
 # ----------------- PANEL DERECHO (LISTBOX) -----------------
@@ -210,7 +280,7 @@ scrollbar.config(command=listbox.yview)
 
 # --- 1. SECCIÓN: CARGA DE AEROPUERTOS ---
 frame_load = ttk.LabelFrame(left_panel, text=" 1. Base de Datos ", padding=10)
-frame_load.pack(fill="x", pady=(0, 10))
+frame_load.pack(fill="x", pady=(0, 5))
 
 ttk.Label(frame_load, text="Archivo:").grid(row=0, column=0, padx=5, sticky="e")
 archivo_entry = ttk.Entry(frame_load, width=20)
@@ -219,7 +289,7 @@ ttk.Button(frame_load, text="Cargar", command=load_airports, style="Accent.TButt
 
 # --- 2. SECCIÓN: EDICIÓN ---
 frame_edit = ttk.LabelFrame(left_panel, text=" 2. Edición Manual ", padding=10)
-frame_edit.pack(fill="x", pady=10)
+frame_edit.pack(fill="x", pady=5)
 
 # Inputs de Agregar
 ttk.Label(frame_edit, text="ICAO:").grid(row=0, column=0, padx=5, pady=2, sticky="e")
@@ -230,7 +300,7 @@ ttk.Label(frame_edit, text="Latitud:").grid(row=1, column=0, padx=5, pady=2, sti
 lat_entry = ttk.Entry(frame_edit, width=12)
 lat_entry.grid(row=1, column=1, padx=5, pady=2, sticky="w")
 
-ttk.Label(frame_edit, text="Longitud:").grid(row=2, column=0, padx=5, pady=2, sticky="e")
+ttk.Label(frame_edit, text="Longitud:").grid(row=1, column=0, padx=5, pady=2, sticky="e")
 lon_entry = ttk.Entry(frame_edit, width=12)
 lon_entry.grid(row=2, column=1, padx=5, pady=2, sticky="w")
 
@@ -247,7 +317,7 @@ ttk.Button(frame_edit, text="Eliminar", command=delete_airport).grid(row=2, colu
 
 # --- 3. SECCIÓN: UTILIDADES ---
 frame_utils = ttk.LabelFrame(left_panel, text=" 3. Herramientas ", padding=10)
-frame_utils.pack(fill="x", pady=10)
+frame_utils.pack(fill="x", pady=5)
 
 ttk.Button(frame_utils, text="Aplicar Schengen", command=apply_schengen).grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 ttk.Button(frame_utils, text="Gráfico 2D", command=plot_data).grid(row=0, column=1, padx=5, pady=5, sticky="ew")
@@ -262,16 +332,27 @@ ttk.Button(frame_utils, text="Guardar", command=save_airports).grid(row=3, colum
 
 # --- 4. SECCIÓN: VUELOS ---
 frame_aircraft = ttk.LabelFrame(left_panel, text=" 4. Análisis de Vuelos (Arrivals) ", padding=10)
-frame_aircraft.pack(fill="x", pady=10)
+frame_aircraft.pack(fill="x", pady=5)
 
 ttk.Label(frame_aircraft, text="Archivo:").grid(row=0, column=0, padx=5, sticky="e")
 arrivals_entry = ttk.Entry(frame_aircraft, width=15)
 arrivals_entry.grid(row=0, column=1, padx=5)
 ttk.Button(frame_aircraft, text="Cargar Vuelos", command=load_arrivals_data, style="Accent.TButton").grid(row=0, column=2, padx=5)
 
+# --- 5. SECCIÓN: ESTRUCTURA  ---
+frame_LEBL = ttk.LabelFrame(left_panel, text=" 5. Estructura y puertas LEBL  ", padding=10)
+frame_LEBL.pack(fill="x", pady=5)
+
+ttk.Label(frame_LEBL, text = "Estructura:").grid(row=0, column=0, padx=5, sticky="e")
+structure_entry = ttk.Entry(frame_LEBL, width=15)
+structure_entry.grid(row=0, column=1, padx=5)
+ttk.Button(frame_LEBL, text = "Cargar", command=load_airports_estructure_ui, style="Accent.TButton").grid(row=0, column=2, padx=5)
+
 # Organizar botones de vuelos en una sub-cuadrícula para que no se estiren feo
 btn_grid = ttk.Frame(frame_aircraft)
 btn_grid.grid(row=1, column=0, columnspan=3, pady=10)
+btn_LEBL_grid = ttk.Frame(frame_LEBL)
+btn_LEBL_grid.grid(row=1, column=0, columnspan=3, pady=10)
 
 ttk.Button(btn_grid, text="Gráfico Llegadas", command=plot_arrivals_data).grid(row=0, column=0, padx=3, pady=3, sticky="ew")
 ttk.Button(btn_grid, text="Aerolíneas", command=plot_airlines_data).grid(row=0, column=1, padx=3, pady=3, sticky="ew")
@@ -279,5 +360,7 @@ ttk.Button(btn_grid, text="Schengen/No", command=plot_flights_type_data).grid(ro
 ttk.Button(btn_grid, text="Mapear LEBL", command=map_flights_data).grid(row=1, column=0, padx=3, pady=3, sticky="ew")
 ttk.Button(btn_grid, text="> 2000km", command=show_long_distance).grid(row=1, column=1, padx=3, pady=3, sticky="ew")
 ttk.Button(btn_grid, text="Guardar TXT", command=save_flights_data).grid(row=1, column=2, padx=3, pady=3, sticky="ew")
+ttk.Button(btn_LEBL_grid, text="Asignar puertas (Auto)", command=assign_gates_ui).grid(row=0, column=0, padx=5, pady=3)
+ttk.Button(btn_LEBL_grid, text="Ver Ocupación", command=update_gates_listbox).grid(row=0, column=1, padx=5, pady=3)
 
 app.mainloop()

@@ -6,7 +6,7 @@ from airport import IsSchengenAirport
 class BarcelonaAP:
     def __init__(self, code):
         self.code = code
-        self.terminal = list[Terminal] = []
+        self.terminal: list[Terminal] = []
 
 class Terminal:
     def __init__(self, name):
@@ -187,7 +187,7 @@ def SearchTerminal (bcn,name):
         i += 1
     return ""
 
-def AssignaGate (bcn, aircraft):
+def AssignGate (bcn, aircraft):
     terminal_name = SearchTerminal(bcn,aircraft.airline_company)
     if terminal_name == "":
         return ""
