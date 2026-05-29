@@ -40,7 +40,8 @@ def SetGates (area, init_gate, end_gate, prefix):
 
 def LoadAirlines (terminal: Terminal, t_name):
 
-    filename = f"{t_name}_Airlines.txt"
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    filename = os.path.join(BASE_DIR, "data", f"{t_name}_Airlines.txt")
 
     if not os.path.exists(filename):
         print("File not found")

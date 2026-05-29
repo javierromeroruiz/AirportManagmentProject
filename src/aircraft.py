@@ -116,13 +116,13 @@ def _save_and_show(fig, filename):
 
 class Aircraft:
     def __init__(
-        self,
-        id_code,
-        airline,
-        origin="-",
-        arrival="-",
-        destination="-",
-        departure="-",
+            self,
+            id_code,
+            airline,
+            origin="-",
+            arrival="-",
+            destination="-",
+            departure="-",
     ):
         self.id = id_code
         self.airline = airline
@@ -475,10 +475,10 @@ def LongDistanceArrivals(aircraft, airports_db):
             diff_lon = (lon_dest - lon_orig) * math.pi / 180
 
             a = (
-                math.sin(diff_lat / 2) ** 2
-                + math.cos(lat_rad_orig)
-                * math.cos(lat_rad_dest)
-                * math.sin(diff_lon / 2) ** 2
+                    math.sin(diff_lat / 2) ** 2
+                    + math.cos(lat_rad_orig)
+                    * math.cos(lat_rad_dest)
+                    * math.sin(diff_lon / 2) ** 2
             )
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
             dist = R * c
@@ -592,7 +592,6 @@ def AssignNightGates(bcn, aircrafts):
 def FreeGate(bcn, id):
     found = False
 
-    # Recorremos: Terminales --> Áreas --> Puertas
     i = 0
     while i < len(bcn.terminal) and not found:
         terminal = bcn.terminal[i]
@@ -605,10 +604,9 @@ def FreeGate(bcn, id):
             while k < len(area.gate):
                 gate = area.gate[k]
 
-                # Comprobamos si es el avion que buscamos.
                 if gate.aircraft_id == id:
                     gate.occupancy = False
-                    gate.aircraft_id = ""   # Limpiamos id
+                    gate.aircraft_id = ""
                     found = True
                     break
                 k += 1
@@ -691,9 +689,10 @@ def PlotDayOccupancy(bcn, aircrafts):
 
                         if gate.occupancy == True:
                             total_occ += 1
-                        k += 1
-                    j += 1
-                i += 1
+                        k += 1  # <-- Mantenido dentro del bucle de puertas
+                    j += 1  # <-- Mantenido dentro del bucle de áreas
+                i += 1  # <-- Mantenido dentro del bucle de terminales
+
             occupied_gates_per_hour[hour_index] = total_occ
         else:
             occupied_gates_per_hour[hour_index] = total_occ
@@ -732,26 +731,28 @@ if __name__ == "__main__":
     arrivals_path = os.path.join(BASE_DIR, "data", "Arrivals.txt")
     departures_path = os.path.join(BASE_DIR, "data", "Departures.txt")
     airports_path = os.path.join(BASE_DIR, "data", "Airports.txt")
-    structure_path = os.path.join(BASE_DIR, "data", "Airports_Structure.txt")
+    structure_path = os.path.join(BASE_DIR, "data", "Terminals.txt")
 
     aircraft = LoadArrivals(arrivals_path)
     airports_db = LoadAirports(airports_path)
 
-    from src.LEBL import LoadAirportStructure
-
-    bcn = LoadAirportStructure(structure_path)
-
-    if not isinstance(bcn, int) and bcn is not None:
+    # 1. Forzamos la visualización secuencial de las tres primeras gráficas
+    if aircraft:
         PlotArrivals(aircraft)
         PlotAirlines(aircraft)
         PlotFlightsType(aircraft)
-
-        departures, status = LoadDepartures(departures_path)
-        if aircraft and departures:
-            all_movements = MergeMovements(aircraft, departures)
-            if all_movements != -1:
-                PlotDayOccupancy(bcn, all_movements)
-
-        LongDistanceArrivals(aircraft, airports_db)
-
         plt.show()
+
+        # 2. Carga directa de la estructura del aeropuerto y salidas
+    from src.LEBL import LoadAirportStructure
+
+    bcn = LoadAirportStructure(structure_path)
+    departures, status = LoadDepartures(departures_path)
+
+    # 3. Forzamos la ejecución de la simulación de puertas
+    all_movements = MergeMovements(aircraft, departures)
+    PlotDayOccupancy(bcn, all_movements)
+    plt.show()
+
+    # 4. Cálculo de distancias final
+    LongDistanceArrivals(aircraft, airports_db)
