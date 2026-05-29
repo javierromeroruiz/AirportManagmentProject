@@ -119,19 +119,22 @@ class Aircraft:
         self,
         id_code,
         airline,
-        origin="",
-        arrival="",
-        destination="",
-        departure="",
+        origin="-",
+        arrival="-",
+        destination="-",
+        departure="-",
     ):
         self.id = id_code
         self.airline = airline
+        self.origin = origin if origin else "-"
+        self.arrival = arrival if arrival else "-"
+        self.destination = destination if destination else "-"
+        self.departure = departure if departure else "-"
+        self.gate = "-"
+
+        self.aircraft_id = id_code
         self.airline_company = airline
-        self.origin = origin
-        self.arrival = arrival
-        self.destination = destination
-        self.departure = departure
-        self.gate = ""
+        self.origin_airport = self.origin
 
 
 def LoadArrivals(filename):
@@ -540,7 +543,7 @@ def MergeMovements(arrivals, departures):
             arr = merged_list[k]
 
             if arr.id == dep.id:
-                if arr.arrival and dep.departure:
+                if arr.arrival and ":" in arr.arrival and dep.departure and ":" in dep.departure:
                     arr_time = arr.arrival.split(":")
                     dep_time = dep.departure.split(":")
 
@@ -595,44 +598,39 @@ def FreeGate(bcn, id):
         terminal = bcn.terminal[i]
 
         j = 0
-        while j < len(terminal.areas) and not found:
-            area = terminal.areas[j]
+        while j < len(terminal.boarding_area):
+            area = terminal.boarding_area[j]
 
             k = 0
-            while k < len(area.gates) and not found:
-                gate = area.gates[k]
+            while k < len(area.gate):
+                gate = area.gate[k]
 
                 # Comprobamos si es el avion que buscamos.
                 if gate.aircraft_id == id:
-                    gate.status = "free"
+                    gate.occupancy = False
                     gate.aircraft_id = ""   # Limpiamos id
                     found = True
+                    break
                 k += 1
+            if found: break
             j += 1
         i += 1
-    if not found:
-        return -1
-    return 0
+    return 0 if found else -1
 
 
-def AssignGatesAtTime(bcn, aircrafts, time):
+def AssignGatesAtTime(bcn, aircrafts, current_mins):
     from src.LEBL import AssignGate
 
-    # Convertimos la hora de control a min
-    time_parts = time.split(":")
-    current_hour_mins = (int(time_parts[0]) * 60) + int(time_parts[1])
-    next_hour_mins = current_hour_mins + 60
-
-    # 1. Liberar las puertas de aviones ya despegados
+    # 1. Liberar las puertas de aviones que despegan
     i = 0
     while i < len(aircrafts):
         plane = aircrafts[i]
 
-        if plane.departure != "":
+        if plane.departure != "-":
             dep_parts = plane.departure.split(":")
             dep_mins = (int(dep_parts[0]) * 60) + int(dep_parts[1])
 
-            if dep_mins <= next_hour_mins:
+            if dep_mins == current_mins:
                 FreeGate(bcn, plane.id)
         i += 1
 
@@ -643,14 +641,14 @@ def AssignGatesAtTime(bcn, aircrafts, time):
     while j < len(aircrafts):
         plane = aircrafts[j]
 
-        if plane.arrival != "":
+        if plane.arrival != "-":
             arr_parts = plane.arrival.split(":")
             arr_mins = (int(arr_parts[0]) * 60) + int(arr_parts[1])
 
-            if current_hour_mins <= arr_mins < next_hour_mins:
-                success = AssignGate(bcn, plane)
+            if arr_mins == current_mins:
+                gate_assigned = AssignGate(bcn, plane)
 
-                if success == -1 or success is False:
+                if gate_assigned == "":
                     not_assigned_count += 1
         j += 1
     return not_assigned_count
@@ -663,47 +661,51 @@ def PlotDayOccupancy(bcn, aircrafts):
     AssignNightGates(bcn, aircrafts)
 
     hours_labels = [f"{h:02d}" for h in range(24)]
-    occupied_gates_per_hour = []
-    rejected_per_hour = []
+    occupied_gates_per_hour = [0] * 24
+    rejected_per_hour = [0] * 24
 
     # Simulamos el dia por horas
-    h = 0
-    while h < 24:
-        str_time = f"{h:02d}:00"
-        rejected = AssignGatesAtTime(bcn, aircrafts, str_time)
-        rejected_per_hour.append(rejected)
+    m = 0
+    total_occ = 0
+    while m < 1440:
+        hour_index = m // 60
+
+        rejected = AssignGatesAtTime(bcn, aircrafts, m)
+        rejected_per_hour[hour_index] += rejected
 
         # Contamos numero de puertas ocupadas
-        total_occ = 0
+        if m % 60 == 59:
+            total_occ = 0
 
-        i = 0
-        while i < len(bcn.terminal):
-            terminal = bcn.terminal[i]
+            i = 0
+            while i < len(bcn.terminal):
+                terminal = bcn.terminal[i]
 
-            j = 0
-            while j < len(terminal.areas):
-                area = terminal.areas[j]
+                j = 0
+                while j < len(terminal.boarding_area):
+                    area = terminal.boarding_area[j]
 
-                k = 0
-                while k < len(area.gates):
-                    gate = area.gates[k]
-                    if gate.status != "free":
-                        total_occ += 1
-                    k += 1
-                j += 1
-            i += 1
-        occupied_gates_per_hour.append(total_occ)
-        h += 1
+                    k = 0
+                    while k < len(area.gate):
+                        gate = area.gate[k]
 
-    # Grafico:
+                        if gate.occupancy == True:
+                            total_occ += 1
+                        k += 1
+                    j += 1
+                i += 1
+            occupied_gates_per_hour[hour_index] = total_occ
+        else:
+            occupied_gates_per_hour[hour_index] = total_occ
+        m += 1
+
     fig, ax = plt.subplots(figsize=(10.5, 5.0), facecolor=CHART["bg"])
 
-    bars_occupied = ax.bar(
+    ax.bar(
         hours_labels, occupied_gates_per_hour,
         color=CHART["primary_light"], edgecolor="white", width=0.45, label="Puertas Ocupadas", zorder=3
     )
-
-    bars_rejected = ax.bar(
+    ax.bar(
         hours_labels, rejected_per_hour,
         bottom=occupied_gates_per_hour,
         color=CHART["non_schengen"], edgecolor="white", width=0.45, label="Aviones No Asignados", zorder=3
@@ -716,7 +718,6 @@ def PlotDayOccupancy(bcn, aircrafts):
         xlabel="Franja horaria simulada",
         ylabel="Número de aviones"
     )
-
     ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
     ax.grid(axis="y", zorder=0)
     ax.legend(loc="upper right")
@@ -727,34 +728,30 @@ def PlotDayOccupancy(bcn, aircrafts):
 
 if __name__ == "__main__":
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     arrivals_path = os.path.join(BASE_DIR, "data", "Arrivals.txt")
     departures_path = os.path.join(BASE_DIR, "data", "Departures.txt")
     airports_path = os.path.join(BASE_DIR, "data", "Airports.txt")
+    structure_path = os.path.join(BASE_DIR, "data", "Airports_Structure.txt")
 
     aircraft = LoadArrivals(arrivals_path)
     airports_db = LoadAirports(airports_path)
 
-    from src.LEBL import BarcelonaAP
-    bcn = BarcelonaAP("LEBL")
+    from src.LEBL import LoadAirportStructure
 
-    PlotArrivals(aircraft)
-    PlotAirlines(aircraft)
-    PlotFlightsType(aircraft)
+    bcn = LoadAirportStructure(structure_path)
 
-    departures, status = LoadDepartures(departures_path)
+    if not isinstance(bcn, int) and bcn is not None:
+        PlotArrivals(aircraft)
+        PlotAirlines(aircraft)
+        PlotFlightsType(aircraft)
 
-    if aircraft and departures:
-        all_movements = MergeMovements(aircraft, departures)
+        departures, status = LoadDepartures(departures_path)
+        if aircraft and departures:
+            all_movements = MergeMovements(aircraft, departures)
+            if all_movements != -1:
+                PlotDayOccupancy(bcn, all_movements)
 
-        if all_movements != -1:
-            PlotDayOccupancy(bcn, all_movements)
-        else:
-            print("ERROR: MergeMovements devolvió -1. Revisa la lógica interna del cruce.")
-    else:
-        print(f"ERROR DE CARGA: Arrivals tiene {len(aircraft)} vuelos y Departures tiene {len(departures)} vuelos. Uno de los dos está vacío.")
+        LongDistanceArrivals(aircraft, airports_db)
 
-    vuelos_largos, co2, med_co2 = LongDistanceArrivals(aircraft, airports_db)
-
-    print(f"Vuelos > 2000km detectados: {len(vuelos_largos)}")
-    print(f"Impacto ambiental total: {co2:.2f} t/CO2")
-    print(f"Impacto medio por vuelo: {med_co2:.2f} t/CO2")
+        plt.show()
