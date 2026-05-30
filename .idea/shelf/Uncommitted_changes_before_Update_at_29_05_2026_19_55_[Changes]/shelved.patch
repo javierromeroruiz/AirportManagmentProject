@@ -1,0 +1,433 @@
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31__Changes_1.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31__Changes_1.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31__Changes_1.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31__Changes_1.xml	(revision 8c292e1c4739914fcfd56af8d1ad77e9c198177b)
++++ /dev/null	(revision 8c292e1c4739914fcfd56af8d1ad77e9c198177b)
+@@ -1,284 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1" date="1779129075966" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 18/05/2026 20:31 [Changes]" />
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/rect-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/rect-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/hor-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/hor-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/up.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/up.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/right.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/right.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-unsel-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-unsel-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/on-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/on-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/border-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/tab-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tab-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/border-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-tri-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-tri-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/on-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/on-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/separator.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/separator.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/border-accent-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-accent-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/vert-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/vert-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/combo-button-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/combo-button-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/sizegrip.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/sizegrip.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/empty.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/empty.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/vert-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/vert-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/border-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/thumb-vert-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-vert-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/hor-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/hor-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-tri-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-tri-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/notebook.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/notebook.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/off-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/off-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/thumb-vert-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-vert-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/on-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/on-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/tree-pressed.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tree-pressed.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-unsel-pressed.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-unsel-pressed.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-unsel-pressed.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-unsel-pressed.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/down-focus.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/down-focus.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-tri-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-tri-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/down.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/down.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/off-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/off-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/combo-button-focus.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/combo-button-focus.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/spin-button-up.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/spin-button-up.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/thumb-vert-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-vert-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/hor-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/hor-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-tri-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-tri-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/thumb-hor-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-hor-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-unsel-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-unsel-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/scale-hor.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/scale-hor.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/scale-vert.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/scale-vert.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/card.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/card.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/tab-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tab-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/tree-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tree-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-unsel-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-unsel-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/rect-accent-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/rect-accent-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/off-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/off-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/rect-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/rect-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/thumb-hor-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-hor-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-unsel-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-unsel-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/tab-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tab-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-unsel-accent.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-unsel-accent.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/combo-button-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/combo-button-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-tri-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-tri-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/thumb-hor-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-hor-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/check-unsel-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-unsel-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/border-invalid.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-invalid.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/rect-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/rect-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/vert-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/vert-hover.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/right-focus.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/right-focus.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/spin-button-down-basic.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/spin-button-down-basic.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/spin-button-down-focus.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/spin-button-down-focus.png" />
+-  </binary>
+-  <binary>
+-    <option name="AFTER_PATH" value="forest-light/radio-tri-hover.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-tri-hover.png" />
+-  </binary>
+-</changelist>
+\ No newline at end of file
+Index: .idea/AirportManagmentProject.iml
+===================================================================
+diff --git a/.idea/AirportManagmentProject.iml b/.idea/AirportManagmentProject.iml
+deleted file mode 100644
+--- a/.idea/AirportManagmentProject.iml	(revision 8c292e1c4739914fcfd56af8d1ad77e9c198177b)
++++ /dev/null	(revision 8c292e1c4739914fcfd56af8d1ad77e9c198177b)
+@@ -1,7 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<module version="4">
+-  <component name="PyDocumentationSettings">
+-    <option name="format" value="PLAIN" />
+-    <option name="myDocStringFormat" value="Plain" />
+-  </component>
+-</module>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"9924af4c-ed48-4fea-ab59-1a99346ab86c\" name=\"Changes\" comment=\"Funciones Aitana\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/Terminals.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Terminals.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/interfaz.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/interfaz.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/LEBL.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/LEBL.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/interfaz.py\" beforeDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"Version-2\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;asimonlazaro-hub&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/javierromeroruiz/AirportManagmentProject.git&quot;,\r\n    &quot;accountId&quot;: &quot;9760de87-7224-49a9-8144-5dd3b67c217c&quot;\r\n  }\r\n}</component>\r\n  <component name=\"McpProjectServerCommands\">\r\n    <commands />\r\n    <urls />\r\n  </component>\r\n  <component name=\"ProblemsViewState\">\r\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 3\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"3BONvrvSzCcfUiYCS7mvDVEglPj\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;Python.aircraft.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.interfaz.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.test.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.test_airport.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;Version-3&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,\r\n    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-python-sdk-2653e85de345-6d6dccd035ac-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-253.31033.139\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"9924af4c-ed48-4fea-ab59-1a99346ab86c\" name=\"Changes\" comment=\"\" />\r\n      <created>1774356389407</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1774356389407</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"h\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1774356570507</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1774356570507</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"aircraft\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1776159004602</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1776159004602</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Funciones Aitana\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1776265193752</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1776265193752</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Funciones Aitana\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1779134003086</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1779134003086</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"5\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"h\" />\r\n    <MESSAGE value=\"aircraft\" />\r\n    <MESSAGE value=\"Funciones Aitana\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Funciones Aitana\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 8c292e1c4739914fcfd56af8d1ad77e9c198177b)
++++ b/.idea/workspace.xml	(date 1779898814563)
+@@ -4,12 +4,81 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="9924af4c-ed48-4fea-ab59-1a99346ab86c" name="Changes" comment="Funciones Aitana">
++    <list default="true" id="9924af4c-ed48-4fea-ab59-1a99346ab86c" name="Changes" comment="a">
++      <change beforePath="$PROJECT_DIR$/.idea/AirportManagmentProject.iml" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-accent-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/border-invalid.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/card.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-tri-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-tri-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-tri-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-unsel-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-unsel-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-unsel-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/check-unsel-pressed.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/combo-button-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/combo-button-focus.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/combo-button-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/down-focus.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/down.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/empty.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/hor-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/hor-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/hor-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/notebook.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/off-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/off-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/off-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/on-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/on-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/on-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-tri-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-tri-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-tri-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-unsel-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-unsel-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-unsel-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/radio-unsel-pressed.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/rect-accent-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/rect-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/rect-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/rect-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/right-focus.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/right.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/scale-hor.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/scale-vert.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/separator.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/shelved.patch" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/sizegrip.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/spin-button-down-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/spin-button-down-focus.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/spin-button-up.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tab-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tab-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tab-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-hor-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-hor-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-hor-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-vert-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-vert-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/thumb-vert-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tree-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/tree-pressed.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/up.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/vert-accent.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/vert-basic.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/vert-hover.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31__Changes_1.xml" beforeDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Terminals.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Terminals.txt" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/interfaz.py" beforeDir="false" afterPath="$PROJECT_DIR$/interfaz.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/LEBL.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/LEBL.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/interfaz.py" beforeDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -124,7 +193,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1779134003086</updated>
+     </task>
+-    <option name="localTasksCounter" value="5" />
++    <task id="LOCAL-00005" summary="a">
++      <option name="closed" value="true" />
++      <created>1779298844285</created>
++      <option name="number" value="00005" />
++      <option name="presentableId" value="LOCAL-00005" />
++      <option name="project" value="LOCAL" />
++      <updated>1779298844285</updated>
++    </task>
++    <option name="localTasksCounter" value="6" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -142,6 +219,7 @@
+     <MESSAGE value="h" />
+     <MESSAGE value="aircraft" />
+     <MESSAGE value="Funciones Aitana" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Funciones Aitana" />
++    <MESSAGE value="a" />
++    <option name="LAST_COMMIT_MESSAGE" value="a" />
+   </component>
+ </project>
+\ No newline at end of file
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_18_05_2026_20_31_[Changes]1/shelved.patch
+deleted file mode 100644
