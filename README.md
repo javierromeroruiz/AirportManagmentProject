@@ -1,6 +1,6 @@
-# Gestión de Aeropuertos y Vuelos — LEBL
+# Gestión de Aeropuertos y Vuelos
 
-Aplicación académica para gestionar bases de datos de aeropuertos, analizar vuelos de llegada y salida, y simular la asignación de puertas en el aeropuerto **LEBL** (Barcelona-El Prat). Incluye interfaz gráfica (Tkinter), gráficos con Matplotlib y exportación a Google Earth (KML).
+Programa para gestionar bases de datos de aeropuertos, analizar vuelos de llegada y salida y simular la asignación de puertas en el aeropuerto **LEBL** (Barcelona-El Prat). Incluye interfaz gráfica, gráficos y exportación a Google Earth.
 
 ## Requisitos
 
@@ -21,6 +21,7 @@ AirportManagmentProject-Version-4/
 ├── README.md
 ├── .gitignore
 ├── interfaz.py          # Punto de entrada de la aplicación (GUI)
+├── forest-light.tcl     # Tema visual de la interfaz
 ├── src/                 # Módulos Python
 │   ├── airport.py       # Aeropuertos, Schengen, mapas 2D
 │   ├── aircraft.py      # Vuelos, gráficos, KML de rutas, simulación
@@ -32,14 +33,10 @@ AirportManagmentProject-Version-4/
 │   ├── Departures.txt
 │   ├── Terminals.txt
 │   ├── T1_Airlines.txt
-│   ├── T2_Airlines.txt
-│   ├── forest-light.tcl # Tema visual de la interfaz
-│   └── forest-light/    # Imágenes PNG del tema (requeridas)
+│   └── T2_Airlines.txt
 └── output/              # Artefactos generados por la aplicación
     ├── .gitkeep
     ├── flights.kml      # Mapa de vuelos (generado por MapFlights)
-    ├── Mapa.kml         # KML de aeropuertos (test / exportación)
-    ├── SchengenAirports.txt
     └── …                # PNG, exportaciones de usuario, etc.
 ```
 
@@ -47,11 +44,11 @@ AirportManagmentProject-Version-4/
 |-------------------|-----|
 | `data/` | Datos de entrada oficiales del proyecto |
 | `output/` | Gráficos PNG, KML y exportaciones guardadas |
-| `src/` | Lógica de negocio; no guardar salidas aquí |
+| `src/` | Scripts |
 
 ## Cómo ejecutar la aplicación
 
-Ejecuta desde la **raíz del proyecto** con `python interfaz.py`. Las rutas a `data/` y `output/` se resuelven automáticamente desde el código.
+**Importante:** hay que ejecutar siempre desde la **raíz del proyecto**. El código crea `output/` y carga `forest-light.tcl` respecto al directorio de trabajo actual.
 
 ```bash
 cd AirportManagmentProject-Version-4
@@ -119,12 +116,14 @@ Las exportaciones manuales (Schengen, vuelos, KML de aeropuertos) se guardan en 
 
 ## Tests
 
+El script `src/test_airport.py` espera `Airports.txt` en el directorio desde el que se ejecuta. Para ejecutarlo:
+
 ```bash
 cd src
 python test_airport.py
 ```
 
-Lee `data/Airports.txt` y guarda `SchengenAirports.txt` y `Mapa.kml` en `output/`.
+Necesitas una copia de `data/Airports.txt` como `src/Airports.txt` (puedes copiarla desde `data/` si no existe). El test puede generar `SchengenAirports.txt` y `Mapa.kml` en `src/`; conviene moverlos a `output/` después de ejecutarlo.
 
 ## Módulos
 
@@ -137,10 +136,6 @@ Lee `data/Airports.txt` y guarda `SchengenAirports.txt` y `Mapa.kml` en `output/
 
 ## Limitaciones conocidas
 
-- Entradas en `data/` (incluido `forest-light.tcl`); salidas generadas en `output/`.
+- Las rutas `output/` y `forest-light.tcl` son **relativas al directorio de trabajo**; la aplicación debe lanzarse desde la raíz del proyecto.
 - `MapFlights` escribe siempre en `output/flights.kml` (ruta fija en el código).
 - `LEBL.py` usa `from airport import …` (pensado para ejecutar tests desde `src/`), mientras que la GUI importa `from src.airport import …`.
-
-## Licencia / autoría
-
-Proyecto académico de gestión aeroportuaria. Consulta la documentación del curso para requisitos de entrega.

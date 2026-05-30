@@ -5,10 +5,6 @@ import matplotlib.ticker as mticker
 from matplotlib.patches import Patch
 import math
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BASE_DIR, "data")
-OUTPUT_DIR = os.path.join(BASE_DIR, "output")
-
 CHART = {
     "primary": "#2d6a4f",
     "primary_light": "#52b788",
@@ -30,8 +26,8 @@ SCHENGEN_PREFIXES = [
 
 
 def _ensure_output_dir():
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
+    if not os.path.exists("output"):
+        os.makedirs("output")
 
 
 def _setup_plot_style():
@@ -109,7 +105,7 @@ def _bar_value_labels(ax, bars, fmt="{:.0f}", offset=0.03, horizontal=False):
 def _save_and_show(fig, filename):
     _ensure_output_dir()
     fig.savefig(
-        os.path.join(OUTPUT_DIR, filename),
+        f"output/{filename}",
         dpi=160,
         bbox_inches="tight",
         facecolor=fig.get_facecolor(),
@@ -418,7 +414,7 @@ def MapFlights(aircraft, airports_db):
 
     _ensure_output_dir()
 
-    with open(os.path.join(OUTPUT_DIR, "flights.kml"), "w") as f:
+    with open("output/flights.kml", "w") as f:
         f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
         f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
         f.write("<Document>\n")
@@ -730,10 +726,12 @@ def PlotDayOccupancy(bcn, aircrafts):
 
 
 if __name__ == "__main__":
-    arrivals_path = os.path.join(DATA_DIR, "Arrivals.txt")
-    departures_path = os.path.join(DATA_DIR, "Departures.txt")
-    airports_path = os.path.join(DATA_DIR, "Airports.txt")
-    structure_path = os.path.join(DATA_DIR, "Terminals.txt")
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    arrivals_path = os.path.join(BASE_DIR, "data", "Arrivals.txt")
+    departures_path = os.path.join(BASE_DIR, "data", "Departures.txt")
+    airports_path = os.path.join(BASE_DIR, "data", "Airports.txt")
+    structure_path = os.path.join(BASE_DIR, "data", "Terminals.txt")
 
     aircraft = LoadArrivals(arrivals_path)
     airports_db = LoadAirports(airports_path)

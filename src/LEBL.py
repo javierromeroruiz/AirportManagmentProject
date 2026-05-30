@@ -1,12 +1,6 @@
 import os
 
-try:
-    from src.airport import IsSchengenAirport
-except ImportError:
-    from airport import IsSchengenAirport
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BASE_DIR, "data")
+from airport import IsSchengenAirport
 
 
 class BarcelonaAP:
@@ -46,7 +40,8 @@ def SetGates (area, init_gate, end_gate, prefix):
 
 def LoadAirlines (terminal: Terminal, t_name):
 
-    filename = os.path.join(DATA_DIR, f"{t_name}_Airlines.txt")
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    filename = os.path.join(BASE_DIR, "data", f"{t_name}_Airlines.txt")
 
     if not os.path.exists(filename):
         print("File not found")
