@@ -1,283 +1,199 @@
 import tkinter as tk
-from tkinter import messagebox, filedialog, ttk
-import os
+from tkinter import messagebox, filedialog
+# Importamos las funciones logicas que creamos en aircraft.py
+from src.aircraft import (
+    Aircraft,
+    LoadArrivals,
+    PlotArrivals,
+    SaveFlights,
+    PlotAirlines,
+    PlotFlightsType,
+    LoadAirports,
+    MapFlights,
+    LongDistanceArrivals
+)
 
-from src.airport import Airport, LoadAirports, AddAirport, RemoveAirport, SetSchengen, SaveSchengenAirports, PlotAirports, \
-    MapAirports
 
-from src.aircraft import LoadArrivals, PlotArrivals, SaveFlights, PlotAirlines, PlotFlightsType, \
-    LoadAirports as LoadAirportsDB, MapFlights, LongDistanceArrivals
+# Creamos la lista donde guardaremos todos los aviones que procesemos
+aircraft_list = []
+# Cargamos la base de datos de aeropuertos del mundo para tener las coordenadas listas
+airports_db = LoadAirports("../data/Airports.txt")
 
-airports = []
-aircrafts = []
-airports_db = {}
-
+# Configuramos la ventana principal de nuestra aplicacion de gestion de vuelos
 app = tk.Tk()
-app.title("Gestor de Aeropuertos y Vuelos")
+app.title("Gestión de Vuelos y Aeronaves")
+app.geometry("800x650")
 
-# --- Centrar la ventana inicialmente ---
-window_width = 1050
-window_height = 700
-screen_width = app.winfo_screenwidth()
-screen_height = app.winfo_screenheight()
-x_cordinate = int((screen_width/2) - (window_width/2))
-y_cordinate = int((screen_height/2) - (window_height/2))
-app.geometry(f"{window_width}x{window_height}+{x_cordinate}+{y_cordinate}")
 
-# --- Cargar el tema ---
-try:
-    app.tk.call('source', 'forest-light.tcl')
-    ttk.Style().theme_use('forest-light')
-except tk.TclError:
-    print("Aviso: No se encontró el archivo forest-light.tcl. Usando tema por defecto.")
+def update_aircraft_listbox():
+    # Funcion que limpia el cuadro de texto de la pantalla y lo vuelve a llenar
+    # con la informacion actualizada de cada avion (ID, origen y compañia).
 
-# ================= FUNCIONES LÓGICAS (Intactas) =================
-def update_listbox():
     listbox.delete(0, tk.END)
+
+    # Este bucle recorre todos los aviones guardados para mostrarlos en la lista visual
     i = 0
-    while i < len(airports):
-        a = airports[i]
-        schengen_status = "Schengen" if a.schengen else "No schengen"
-        # Usamos formato para tabular visualmente (requiere fuente monoespaciada como Consolas)
-        texto = f"{a.code:<6} | Lat: {a.lat:<8} | Lon: {a.lon:<8} | {schengen_status}"
-        listbox.insert(tk.END, texto)
+    while i < len(aircraft_list):
+        ac = aircraft_list[i]
+        listbox.insert(tk.END, f"{ac.aircraft_id} | Origen: {ac.origin_airport} | Compañía: {ac.airline_company}")
         i += 1
 
-def load_airports():
-    global airports, airports_db
+
+def load_arrivals_ui():
+    # Funcion que lee el nombre del archivo de llegadas escrito por el usuario.
+    # Llama a la funcion de carga y, si encuentra datos, actualiza la lista de la pantalla.
+
+    global aircraft_list
     filename = archivo_entry.get()
-    loaded_data = LoadAirports(filename)
-    loaded_db = LoadAirportsDB(filename)
-    if loaded_data:
-        airports = loaded_data
-        if loaded_db:
-            airports_db = loaded_db
-        update_listbox()
-        messagebox.showinfo("INFO", "Aeropuertos cargados")
+
+    # Intentamos cargar los aviones desde el archivo de texto indicado
+    data = LoadArrivals(filename)
+    if data:
+        aircraft_list = data
+        update_aircraft_listbox()
+        messagebox.showinfo("Éxito", "Vuelos de llegada cargados correctamente.")
     else:
-        messagebox.showerror("ERROR", "No se han cargado aeropuertos")
+        messagebox.showerror("Error", "No se pudo cargar el archivo o está vacío.")
 
-def add_airport():
-    code = code_entry.get().upper()
-    try:
-        lat = float(lat_entry.get())
-        lon = float(lon_entry.get())
-        if len(code) == 4 and code.isalpha():
-            new_airport = Airport(code, lat, lon)
-            AddAirport(airports, new_airport)
-            update_listbox()
-            code_entry.delete(0, tk.END)
-            lat_entry.delete(0, tk.END)
-            lon_entry.delete(0, tk.END)
-        else:
-            messagebox.showwarning("Warning", "El Codigo ICAO debe de ser 4 letras.")
-    except ValueError:
-        messagebox.showerror("Error", "La latitud y la longitud deben ser numeros")
 
-def delete_airport():
-    code = del_entry.get().upper()
-    result = RemoveAirport(airports, code)
-    if result == 0:
-        update_listbox()
-        del_entry.delete(0, tk.END)
-    else:
-        messagebox.showerror("Error", "No se ha encontrado el aeropuerto en la lista")
+def save_flights_ui():
+    # Funcion para guardar la lista de aviones actual en un archivo nuevo.
+    # Pide al usuario un nombre para el archivo y confirma si se ha guardado bien.
 
-def apply_schengen():
-    i = 0
-    while i < len(airports):
-        SetSchengen(airports[i])
-        i += 1
-    update_listbox()
-    messagebox.showinfo("Success", "Schengen aplicado")
-
-def save_airports():
     filename = save_entry.get()
-    result = SaveSchengenAirports(airports, filename)
+    if not filename:
+        messagebox.showwarning("Atención", "Escribe un nombre para el archivo de guardado.")
+        return
+
+    # Ejecutamos la funcion de guardado y comprobamos si ha funcionado
+    result = SaveFlights(aircraft_list, filename)
     if result == 0:
-        messagebox.showinfo("Success", f"Los aeropuertos se han guardado en: {filename}")
+        messagebox.showinfo("Éxito", f"Vuelos guardados en {filename}")
     else:
-        messagebox.showerror("Error", "La lista esta vacia")
+        messagebox.showerror("Error", "No hay vuelos para guardar.")
 
-def plot_data():
-    if airports:
-        PlotAirports(airports)
+
+def show_arrivals_plot():
+    # Funcion que comprueba si hay aviones cargados y, en ese caso,
+    # abre la ventana con el grafico de llegadas por franja horaria.
+
+    if aircraft_list:
+        PlotArrivals(aircraft_list)
     else:
-        messagebox.showwarning("Warning", "No hay aeropuertos")
+        messagebox.showwarning("Atención", "Primero debes cargar los vuelos.")
 
-def map_data():
-    if airports:
-        filepath = filedialog.asksaveasfilename(
-            defaultextension=".kml",
-            filetypes=[("KML Files", "*.kml"), ("All Files", "*.*")],
-            title="Guardar mapa en Google Earth"
-        )
-        if filepath:
-            result = MapAirports(airports, filepath)
-            if result == 0:
-                messagebox.showinfo("Success", f"El mapa se ha guardado en:\n{filepath}")
-            else:
-                messagebox.showerror("Error", "No se ha podido guardar el mapa")
+
+def show_airlines_plot():
+    # Funcion que abre el grafico para ver que compañias aereas
+    # tienen mas presencia en nuestra lista de vuelos.
+
+    if aircraft_list:
+        PlotAirlines(aircraft_list)
     else:
-        messagebox.showwarning("Warning", "No hay aeropuertos que guardar")
+        messagebox.showwarning("Atención", "Primero debes cargar los vuelos.")
 
-def load_arrivals_data():
-    global aircrafts
-    filename = arrivals_entry.get()
-    loaded = LoadArrivals(filename)
-    if loaded:
-        aircrafts = loaded
-        messagebox.showinfo("INFO", f"Se han cargado {len(aircrafts)} vuelos exitosamente.")
+
+def show_types_plot():
+    # Funcion que muestra el grafico comparativo entre vuelos procedentes
+    # de aeropuertos Schengen y vuelos internacionales.
+
+    if aircraft_list:
+        PlotFlightsType(aircraft_list)
     else:
-        messagebox.showerror("ERROR", "No se han podido cargar los vuelos. Revisa el archivo.")
+        messagebox.showwarning("Atención", "Primero debes cargar los vuelos.")
 
-def plot_arrivals_data():
-    if aircrafts:
-        PlotArrivals(aircrafts)
-    else:
-        messagebox.showwarning("Warning", "Primero debes cargar los vuelos (Arrivals).")
 
-def plot_airlines_data():
-    if aircrafts:
-        PlotAirlines(aircrafts)
-    else:
-        messagebox.showwarning("Warning", "Primero debes cargar los vuelos (Arrivals).")
+def generate_kml_ui():
+    # Funcion que abre un explorador de archivos para elegir donde guardar el mapa.
+    # Crea un archivo KML con las rutas de los aviones para verlo en Google Earth.
 
-def plot_flights_type_data():
-    if aircrafts:
-        PlotFlightsType(aircrafts)
-    else:
-        messagebox.showwarning("Warning", "Primero debes cargar los vuelos (Arrivals).")
+    if not aircraft_list:
+        messagebox.showwarning("Atención", "No hay vuelos para mapear.")
+        return
 
-def save_flights_data():
-    if aircrafts:
-        filepath = filedialog.asksaveasfilename(
-            defaultextension=".txt",
-            filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")],
-            title="Guardar Vuelos"
-        )
-        if filepath:
-            res = SaveFlights(aircrafts, filepath)
-            if res == 0:
-                messagebox.showinfo("Success", f"Vuelos guardados en:\n{filepath}")
-            else:
-                messagebox.showerror("Error", "Hubo un problema al guardar los vuelos.")
-    else:
-        messagebox.showwarning("Warning", "No hay vuelos para guardar.")
+    # Abrimos la ventana para que el usuario elija nombre y destino del mapa
+    filepath = filedialog.asksaveasfilename(
+        defaultextension=".kml",
+        filetypes=[("Archivos KML", "*.kml")],
+        title="Guardar rutas en Google Earth"
+    )
 
-def map_flights_data():
-    if aircrafts and airports_db:
-        res = MapFlights(aircrafts, airports_db)
-        if res == 0:
-            messagebox.showinfo("Success", "El mapa de vuelos se ha guardado en 'flights.kml'")
+    if filepath:
+        # Si la ruta es valida, generamos el archivo KML con las lineas de colores
+        result = MapFlights(aircraft_list, airports_db)
+        if result == 0:
+            messagebox.showinfo("Éxito", "Mapa KML generado correctamente.")
         else:
-            messagebox.showerror("Error", "Error al crear el mapa (¿Falta el aeropuerto LEBL en la base de datos?)")
-    else:
-        messagebox.showwarning("Warning", "Debes cargar los vuelos Y los aeropuertos primero.")
-
-def show_long_distance():
-    if aircrafts and airports_db:
-        especiales = LongDistanceArrivals(aircrafts, airports_db)
-        messagebox.showinfo("Larga Distancia", f"Número de vuelos a más de 2000km: {len(especiales)}")
-    else:
-        messagebox.showwarning("Warning", "Debes cargar los vuelos Y los aeropuertos primero.")
+            messagebox.showerror("Error", "Error al generar el mapa (comprueba LEBL en Airports.txt).")
 
 
-# ================= INTERFAZ GRÁFICA (UI) MEJORADA =================
+def calculate_co2_ui():
+    # Funcion que calcula la distancia de los vuelos y muestra el impacto ambiental.
+    # Nos dice cuantos vuelos son de larga distancia y cuanta contaminacion de CO2 generan.
 
-# Contenedor principal
-main_container = ttk.Frame(app, padding=15)
-main_container.pack(fill="both", expand=True)
+    if not aircraft_list:
+        messagebox.showwarning("Atención", "Primero carga los vuelos.")
+        return
 
-# ---> ESTRUCTURA DE DOS COLUMNAS <---
-# Panel izquierdo (Herramientas). Le decimos que ocupe todo el alto (fill="y")
-left_panel = ttk.Frame(main_container)
-left_panel.pack(side="left", fill="y", padx=(0, 15))
+    # Obtenemos los datos calculados de distancias y toneladas de gas emitidas
+    vuelos_largos, total_co2, media_co2 = LongDistanceArrivals(aircraft_list, airports_db)
 
-# Panel derecho (Visualización). Le decimos que se expanda para llenar todo lo demás (expand=True)
-right_panel = ttk.LabelFrame(main_container, text=" Vista de Aeropuertos en Memoria ", padding=10)
-right_panel.pack(side="right", fill="both", expand=True)
+    # Mostramos los resultados finales en una ventana emergente para el usuario
+    mensaje = (
+        f"Vuelos de larga distancia (>2000km): {len(vuelos_largos)}\n"
+        f"Contaminación total: {total_co2:.2f} toneladas de CO2\n"
+        f"Media por vuelo: {media_co2:.2f} toneladas de CO2"
+    )
+    messagebox.showinfo("Análisis Ambiental", mensaje)
 
-# ----------------- PANEL DERECHO (LISTBOX) -----------------
-# Al estar en el panel derecho con expand=True, si maximizas la pantalla, la lista crecerá.
-scrollbar = ttk.Scrollbar(right_panel)
-scrollbar.pack(side="right", fill="y")
-listbox = tk.Listbox(right_panel, yscrollcommand=scrollbar.set, font=("Consolas", 10))
-listbox.pack(side="left", fill="both", expand=True)
-scrollbar.config(command=listbox.yview)
 
-# ----------------- PANEL IZQUIERDO (CONTROLES) -----------------
+# =====================================================================
+# DISEÑO VISUAL DE LA INTERFAZ (Botones, Casillas y Cuadros)
+# =====================================================================
 
-# --- 1. SECCIÓN: CARGA DE AEROPUERTOS ---
-frame_load = ttk.LabelFrame(left_panel, text=" 1. Base de Datos ", padding=10)
-frame_load.pack(fill="x", pady=(0, 10))
+# Zona superior para cargar los archivos de vuelos
+frame_top = tk.Frame(app, bg="lightgreen", pady=10)
+frame_top.pack(fill="x")
 
-ttk.Label(frame_load, text="Archivo:").grid(row=0, column=0, padx=5, sticky="e")
-archivo_entry = ttk.Entry(frame_load, width=20)
-archivo_entry.grid(row=0, column=1, padx=5)
-ttk.Button(frame_load, text="Cargar", command=load_airports, style="Accent.TButton").grid(row=0, column=2, padx=5)
+tk.Label(frame_top, text="Archivo de llegadas (ej: ../data/Arrivals.txt):", bg="lightgreen").pack(side="left", padx=5)
+archivo_entry = tk.Entry(frame_top, width=30)
+archivo_entry.pack(side="left", padx=5)
+tk.Button(frame_top, text="Cargar Vuelos", command=load_arrivals_ui).pack(side="left", padx=5)
 
-# --- 2. SECCIÓN: EDICIÓN ---
-frame_edit = ttk.LabelFrame(left_panel, text=" 2. Edición Manual ", padding=10)
-frame_edit.pack(fill="x", pady=10)
+# Lista central donde se ven los aviones cargados
+listbox = tk.Listbox(app, width=80, height=15)
+listbox.pack(pady=20)
 
-# Inputs de Agregar
-ttk.Label(frame_edit, text="ICAO:").grid(row=0, column=0, padx=5, pady=2, sticky="e")
-code_entry = ttk.Entry(frame_edit, width=12)
-code_entry.grid(row=0, column=1, padx=5, pady=2, sticky="w")
+# Zona de botones para graficos y analisis estadistico
+frame_buttons = tk.Frame(app)
+frame_buttons.pack(pady=10)
 
-ttk.Label(frame_edit, text="Latitud:").grid(row=1, column=0, padx=5, pady=2, sticky="e")
-lat_entry = ttk.Entry(frame_edit, width=12)
-lat_entry.grid(row=1, column=1, padx=5, pady=2, sticky="w")
+tk.Button(frame_buttons, text="Gráfico Horario", command=show_arrivals_plot, width=20).grid(row=0, column=0, padx=5,
+                                                                                            pady=5)
+tk.Button(frame_buttons, text="Gráfico Aerolíneas", command=show_airlines_plot, width=20).grid(row=0, column=1, padx=5,
+                                                                                               pady=5)
+tk.Button(frame_buttons, text="Gráfico Schengen", command=show_types_plot, width=20).grid(row=0, column=2, padx=5,
+                                                                                          pady=5)
 
-ttk.Label(frame_edit, text="Longitud:").grid(row=2, column=0, padx=5, pady=2, sticky="e")
-lon_entry = ttk.Entry(frame_edit, width=12)
-lon_entry.grid(row=2, column=1, padx=5, pady=2, sticky="w")
+# Zona de utilidades avanzadas (Mapa e Impacto Ambiental)
+frame_extra = tk.Frame(app)
+frame_extra.pack(pady=10)
 
-ttk.Button(frame_edit, text="Agregar Aeropuerto", command=add_airport).grid(row=3, column=0, columnspan=2, pady=(10,0))
+tk.Button(frame_extra, text="Ver en Google Earth", command=generate_kml_ui, bg="skyblue", width=30).grid(row=0,
+                                                                                                         column=0,
+                                                                                                         padx=5)
+tk.Button(frame_extra, text="Calcular Impacto CO2", command=calculate_co2_ui, bg="orange", width=30).grid(row=0,
+                                                                                                          column=1,
+                                                                                                          padx=5)
 
-# Separador
-ttk.Separator(frame_edit, orient="vertical").grid(row=0, column=2, rowspan=4, sticky="ns", padx=15)
+# Zona inferior para guardar los datos procesados en un archivo
+frame_save = tk.Frame(app, pady=20)
+frame_save.pack()
 
-# Inputs de Borrar
-ttk.Label(frame_edit, text="Borrar (ICAO):").grid(row=0, column=3, padx=5, sticky="w")
-del_entry = ttk.Entry(frame_edit, width=12)
-del_entry.grid(row=1, column=3, padx=5, pady=(0,10))
-ttk.Button(frame_edit, text="Eliminar", command=delete_airport).grid(row=2, column=3, pady=5)
+tk.Label(frame_save, text="Guardar lista como:").pack(side="left", padx=5)
+save_entry = tk.Entry(frame_save, width=20)
+save_entry.pack(side="left", padx=5)
+tk.Button(frame_save, text="Guardar Vuelos", command=save_flights_ui).pack(side="left", padx=5)
 
-# --- 3. SECCIÓN: UTILIDADES ---
-frame_utils = ttk.LabelFrame(left_panel, text=" 3. Herramientas ", padding=10)
-frame_utils.pack(fill="x", pady=10)
-
-ttk.Button(frame_utils, text="Aplicar Schengen", command=apply_schengen).grid(row=0, column=0, padx=5, pady=5, sticky="ew")
-ttk.Button(frame_utils, text="Gráfico 2D", command=plot_data).grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-ttk.Button(frame_utils, text="Exp. Google Earth", command=map_data).grid(row=0, column=2, padx=5, pady=5, sticky="ew")
-
-ttk.Separator(frame_utils, orient="horizontal").grid(row=1, column=0, columnspan=3, sticky="ew", pady=10)
-
-ttk.Label(frame_utils, text="Exportar archivo Schengen:").grid(row=2, column=0, columnspan=2, sticky="w", padx=5)
-save_entry = ttk.Entry(frame_utils, width=15)
-save_entry.grid(row=3, column=0, columnspan=2, sticky="ew", padx=5)
-ttk.Button(frame_utils, text="Guardar", command=save_airports).grid(row=3, column=2, padx=5)
-
-# --- 4. SECCIÓN: VUELOS ---
-frame_aircraft = ttk.LabelFrame(left_panel, text=" 4. Análisis de Vuelos (Arrivals) ", padding=10)
-frame_aircraft.pack(fill="x", pady=10)
-
-ttk.Label(frame_aircraft, text="Archivo:").grid(row=0, column=0, padx=5, sticky="e")
-arrivals_entry = ttk.Entry(frame_aircraft, width=15)
-arrivals_entry.grid(row=0, column=1, padx=5)
-ttk.Button(frame_aircraft, text="Cargar Vuelos", command=load_arrivals_data, style="Accent.TButton").grid(row=0, column=2, padx=5)
-
-# Organizar botones de vuelos en una sub-cuadrícula para que no se estiren feo
-btn_grid = ttk.Frame(frame_aircraft)
-btn_grid.grid(row=1, column=0, columnspan=3, pady=10)
-
-ttk.Button(btn_grid, text="Gráfico Llegadas", command=plot_arrivals_data).grid(row=0, column=0, padx=3, pady=3, sticky="ew")
-ttk.Button(btn_grid, text="Aerolíneas", command=plot_airlines_data).grid(row=0, column=1, padx=3, pady=3, sticky="ew")
-ttk.Button(btn_grid, text="Schengen/No", command=plot_flights_type_data).grid(row=0, column=2, padx=3, pady=3, sticky="ew")
-ttk.Button(btn_grid, text="Mapear LEBL", command=map_flights_data).grid(row=1, column=0, padx=3, pady=3, sticky="ew")
-ttk.Button(btn_grid, text="> 2000km", command=show_long_distance).grid(row=1, column=1, padx=3, pady=3, sticky="ew")
-ttk.Button(btn_grid, text="Guardar TXT", command=save_flights_data).grid(row=1, column=2, padx=3, pady=3, sticky="ew")
-
+# Mantenemos la ventana abierta para que el usuario pueda interactuar
 app.mainloop()
