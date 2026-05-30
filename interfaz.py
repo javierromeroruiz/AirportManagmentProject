@@ -28,8 +28,19 @@ from src.aircraft import (
     LoadAirports as LoadAirportsDB,
     MapFlights,
     LongDistanceArrivals,
+    LoadDepartures,
+    MergeMovements,
+    NightAircraft,
+    AssignNightGates,
+    FreeGate,
+    AssignGatesAtTime,
+    PlotDayOccupancy
 )
 from src.LEBL import LoadAirportStructure, GateOccupancy, AssignGate
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 
 # ===============================================================
 #  ESTADO GLOBAL
@@ -37,6 +48,9 @@ from src.LEBL import LoadAirportStructure, GateOccupancy, AssignGate
 airports = []
 aircrafts = []
 airports_db = {}
+departures = []
+all_movements = []
+night_aircrafts = []
 bcn_airport = None
 
 _plot_canvas = None
@@ -56,12 +70,13 @@ app.geometry(
 )
 app.minsize(900, 750)
 
-# Tema Forest-Light
+# Tema Forest-Light (tcl + carpeta data/forest-light/*.png)
 try:
-    app.tk.call("source", "forest-light.tcl")
+    theme_tcl = os.path.join(DATA_DIR, "forest-light.tcl")
+    app.tk.call("source", theme_tcl)
     ttk.Style().theme_use("forest-light")
-except tk.TclError:
-    print("Aviso: forest-light.tcl no encontrado. Usando tema por defecto.")
+except tk.TclError as e:
+    print(f"Aviso: no se pudo cargar forest-light ({e}). Usando tema por defecto.")
 
 
 # ===============================================================
@@ -407,6 +422,20 @@ def load_arrivals_data():
         set_status("✘ No se pudieron cargar los vuelos.", "red")
         messagebox.showerror("Error", "No se pudo leer el archivo de llegadas.")
 
+def load_departures_data ():
+    global departures
+    filename = departures_entry.get().strip()
+    if not filename:
+        set_status("⚠ Selecciona un archivo de vuelos.", "orange")
+        return
+    loaded , status = LoadDepartures(filename)
+    if loaded:
+        departures = loaded
+        set_status(f"✔ {len(departures)} vuelos cargados.", "green")
+        messagebox.showinfo("Vuelos cargados", f"Se cargaron {len(departures)} vuelos correctamente.")
+    else:
+        set_status("✘ No se pudieron cargar los vuelos.", "red")
+        messagebox.showerror("Error", "No se pudo leer el archivo de salidas.")
 
 def plot_arrivals_data():
     if aircrafts:
@@ -453,7 +482,8 @@ def map_flights_data():
         if res == 0:
             set_status("✔ 'flights.kml' generado correctamente.", "green")
             messagebox.showinfo(
-                "Mapa generado", "El mapa de vuelos se guardó en 'output/flights.kml'."
+                "Mapa generado",
+                f"El mapa de vuelos se guardó en:\n{os.path.join(OUTPUT_DIR, 'flights.kml')}",
             )
         else:
             set_status("✘ Error al crear el mapa.", "red")
@@ -477,7 +507,50 @@ def show_long_distance():
     else:
         set_status("⚠ Carga vuelos y aeropuertos primero.", "orange")
 
+def merge_movements_ui():
+    global all_movements
+    if not aircrafts:
+        set_status("⚠ Carga primero las llegadas.", "orange")
+        messagebox.showwarning("Faltan llegadas", "Primero debes cargar el archivo de llegadas.")
+        return
+    if not departures:
+        set_status("⚠ Carga primero las salidas.", "orange")
+        messagebox.showwarning("Faltan salidas", "Primero debes cargar el archivo de salidas.")
+        return
+    result = MergeMovements(aircrafts, departures)
+    if result == -1:
+        set_status("✘ No se pudieron combinar los movimientos.", "red")
+        messagebox.showerror(
+            "Error",
+            "No se pudieron combinar llegadas y salidas."
+        )
+        return
+    all_movements = result
+    set_status(
+        f"✔ Movimientos combinados: {len(all_movements)} aviones.",
+        "green"
+    )
+    messagebox.showinfo(
+        "Movimientos combinados",
+        f"Se han combinado llegadas y salidas correctamente.\n\n"
+        f"Total de movimientos: {len(all_movements)}"
+    )
 
+def night_aircraft_ui():
+    global night_aircrafts
+    if not all_movements:
+        set_status("⚠ Combina primero llegadas y salidas.", "orange")
+        return
+    result = NightAircraft(all_movements)
+    if result == -1:
+        set_status("✘ No se pudieron obtener los aviones nocturnos.", "red")
+        return
+    night_aircrafts = result
+
+    set_status(
+        f"✔ {len(night_aircrafts)} aviones nocturnos encontrados.",
+        "green"
+    )
 # ---------- Pestaña 4: LEBL ----------
 
 
@@ -523,6 +596,47 @@ def assign_gates_ui():
         "Asignación terminada",
         f"Puertas asignadas: {exitos}\nSin espacio disponible: {fallidos}",
     )
+def assign_night_gates_ui():
+    if not bcn_airport:
+        set_status("⚠ Carga primero la estructura de LEBL.", "orange")
+        return
+    if not all_movements:
+        set_status("⚠ Combina primero llegadas y salidas.", "orange")
+        return
+    result = AssignNightGates(bcn_airport, all_movements)
+    if result == 0:
+        update_gates_listbox()
+        set_status("✔ Puertas asignadas a aviones nocturnos.", "green")
+    else:
+        set_status("✘ No se pudieron asignar puertas nocturnas.", "red")
+def plot_day_occupancy_ui():
+    if not bcn_airport:
+        set_status(
+            "⚠ Carga primero la estructura de LEBL.",
+            "orange"
+        )
+        return
+    if not all_movements:
+        set_status(
+            "⚠ Combina primero llegadas y salidas.",
+            "orange"
+        )
+        return
+    try:
+        PlotDayOccupancy(
+            bcn_airport,
+            all_movements
+        )
+        set_status(
+            "✔ Simulación diaria completada.",
+            "green"
+        )
+    except Exception as e:
+        set_status(
+            "✘ Error en la simulación.",
+            "red"
+        )
+        print(e)
 
 
 # ===============================================================
@@ -724,23 +838,41 @@ arrivals_entry = make_file_row(
     filetypes=[("Archivos de texto", "*.txt"), ("CSV", "*.csv"), ("Todos", "*.*")],
     row=1,
 )
+ttk.Label(tab_vuelo, text="Archivo de salidas:", font=("Segoe UI", 9, "bold")).grid(
+    row=2, column=0, columnspan=3, sticky="w", pady=(0, 4)
+)
+departures_entry = make_file_row(
+    tab_vuelo,
+    "Salidas:",
+    filetypes=[("Archivos de texto", "*.txt"), ("CSV", "*.csv"), ("Todos", "*.*")],
+    row=3,
+)
 
 ttk.Button(
     tab_vuelo,
     text="  Cargar vuelos  ",
     command=load_arrivals_data,
     style="Accent.TButton",
-).grid(row=2, column=0, columnspan=3, sticky="ew", pady=(8, 4))
+).grid(row=4, column=0, columnspan=3, sticky="ew", pady=(8, 4))
+
+ttk.Button(
+    tab_vuelo,
+    text="Cargar salidas",
+    command=load_departures_data,
+    style="Accent.TButton",
+).grid(row=5, column=0, columnspan=3, sticky="ew", pady=(4,4))
 
 ttk.Separator(tab_vuelo, orient="horizontal").grid(
-    row=3, column=0, columnspan=3, sticky="ew", pady=8
+    row=6, column=0, columnspan=3, sticky="ew", pady=8
 )
 
 ttk.Label(tab_vuelo, text="Análisis y gráficos:", font=("Segoe UI", 9, "bold")).grid(
-    row=4, column=0, columnspan=3, sticky="w", pady=(0, 6)
+    row=7, column=0, columnspan=3, sticky="w", pady=(0, 6)
 )
 
 btn_data = [
+    ("🔁 Combinar llegadas y salidas", merge_movements_ui),
+    ("🌙 Night Aircraft", night_aircraft_ui),
     ("📈 Gráfico de llegadas", plot_arrivals_data),
     ("🏢 Aerolíneas", plot_airlines_data),
     ("✔/✘ Schengen/No", plot_flights_type_data),
@@ -751,7 +883,7 @@ btn_data = [
 for idx, (label, cmd) in enumerate(btn_data):
     r, c = divmod(idx, 2)
     ttk.Button(tab_vuelo, text=label, command=cmd).grid(
-        row=5 + r, column=c, padx=4, pady=4, sticky="ew"
+        row=9 + r, column=c, padx=4, pady=4, sticky="ew"
     )
 
 tab_vuelo.columnconfigure(0, weight=1)
@@ -794,6 +926,18 @@ ttk.Button(tab_lebl, text="🔍 Ver ocupación actual", command=update_gates_lis
     row=6, column=0, columnspan=3, sticky="ew", pady=4
 )
 
+ttk.Button(
+    tab_lebl,
+    text="🌙 Asignar puertas nocturnas",
+    command=assign_night_gates_ui
+).grid(row=7, column=0, columnspan=3, sticky="ew", pady=4)
+
+ttk.Button(
+    tab_lebl,
+    text="📊 Simular ocupación diaria",
+    command=plot_day_occupancy_ui
+).grid(row=8,column=0,columnspan=3,sticky="ew",pady=4)
+
 tab_lebl.columnconfigure(1, weight=1)
 
 # ===============================================================
@@ -813,6 +957,12 @@ status_label.pack(side="left", fill="x", expand=True, padx=4, pady=2)
 # ===============================================================
 #  ARRANQUE
 # ===============================================================
+archivo_entry.insert(0, os.path.join(DATA_DIR, "Airports.txt"))
+arrivals_entry.insert(0, os.path.join(DATA_DIR, "Arrivals.txt"))
+departures_entry.insert(0, os.path.join(DATA_DIR, "Departures.txt"))
+structure_entry.insert(0, os.path.join(DATA_DIR, "Terminals.txt"))
+save_entry.insert(0, os.path.join(OUTPUT_DIR, "SchengenAirports.txt"))
+
 set_status("Listo. Selecciona una pestaña para comenzar.")
 app.mainloop()
 

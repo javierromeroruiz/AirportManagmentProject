@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.patches import Patch
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+OUTPUT_DIR = os.path.join(BASE_DIR, "output")
+
 CHART = {
     "primary": "#2d6a4f",
     "primary_light": "#52b788",
@@ -25,8 +29,8 @@ SCHENGEN_PREFIXES = [
 
 
 def _ensure_output_dir():
-    if not os.path.exists("output"):
-        os.makedirs("output")
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
 
 
 def _setup_plot_style():
@@ -104,7 +108,7 @@ def _bar_value_labels(ax, bars, fmt="{:.0f}", offset=0.03, horizontal=False):
 def _save_and_show(fig, filename):
     _ensure_output_dir()
     fig.savefig(
-        f"output/{filename}",
+        os.path.join(OUTPUT_DIR, filename),
         dpi=160,
         bbox_inches="tight",
         facecolor=fig.get_facecolor(),

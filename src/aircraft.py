@@ -5,6 +5,10 @@ import matplotlib.ticker as mticker
 from matplotlib.patches import Patch
 import math
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+OUTPUT_DIR = os.path.join(BASE_DIR, "output")
+
 CHART = {
     "primary": "#2d6a4f",
     "primary_light": "#52b788",
@@ -26,8 +30,8 @@ SCHENGEN_PREFIXES = [
 
 
 def _ensure_output_dir():
-    if not os.path.exists("output"):
-        os.makedirs("output")
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
 
 
 def _setup_plot_style():
@@ -105,7 +109,7 @@ def _bar_value_labels(ax, bars, fmt="{:.0f}", offset=0.03, horizontal=False):
 def _save_and_show(fig, filename):
     _ensure_output_dir()
     fig.savefig(
-        f"output/{filename}",
+        os.path.join(OUTPUT_DIR, filename),
         dpi=160,
         bbox_inches="tight",
         facecolor=fig.get_facecolor(),
@@ -116,21 +120,25 @@ def _save_and_show(fig, filename):
 
 class Aircraft:
     def __init__(
-        self,
-        id_code,
-        airline,
-        origin="",
-        arrival="",
-        destination="",
-        departure="",
+            self,
+            id_code,
+            airline,
+            origin="-",
+            arrival="-",
+            destination="-",
+            departure="-",
     ):
         self.id = id_code
         self.airline = airline
-        self.origin = origin
-        self.arrival = arrival
-        self.destination = destination
-        self.departure = departure
-        self.gate = ""
+        self.origin = origin if origin else "-"
+        self.arrival = arrival if arrival else "-"
+        self.destination = destination if destination else "-"
+        self.departure = departure if departure else "-"
+        self.gate = "-"
+
+        self.aircraft_id = id_code
+        self.airline_company = airline
+        self.origin_airport = self.origin
 
 
 def LoadArrivals(filename):
@@ -410,7 +418,7 @@ def MapFlights(aircraft, airports_db):
 
     _ensure_output_dir()
 
-    with open("output/flights.kml", "w") as f:
+    with open(os.path.join(OUTPUT_DIR, "flights.kml"), "w") as f:
         f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
         f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
         f.write("<Document>\n")
@@ -471,10 +479,10 @@ def LongDistanceArrivals(aircraft, airports_db):
             diff_lon = (lon_dest - lon_orig) * math.pi / 180
 
             a = (
-                math.sin(diff_lat / 2) ** 2
-                + math.cos(lat_rad_orig)
-                * math.cos(lat_rad_dest)
-                * math.sin(diff_lon / 2) ** 2
+                    math.sin(diff_lat / 2) ** 2
+                    + math.cos(lat_rad_orig)
+                    * math.cos(lat_rad_dest)
+                    * math.sin(diff_lon / 2) ** 2
             )
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
             dist = R * c
@@ -539,7 +547,7 @@ def MergeMovements(arrivals, departures):
             arr = merged_list[k]
 
             if arr.id == dep.id:
-                if arr.arrival and dep.departure:
+                if arr.arrival and ":" in arr.arrival and dep.departure and ":" in dep.departure:
                     arr_time = arr.arrival.split(":")
                     dep_time = dep.departure.split(":")
 
@@ -585,16 +593,168 @@ def AssignNightGates(bcn, aircrafts):
     return 0
 
 
+def FreeGate(bcn, id):
+    found = False
+
+    i = 0
+    while i < len(bcn.terminal) and not found:
+        terminal = bcn.terminal[i]
+
+        j = 0
+        while j < len(terminal.boarding_area):
+            area = terminal.boarding_area[j]
+
+            k = 0
+            while k < len(area.gate):
+                gate = area.gate[k]
+
+                if gate.aircraft_id == id:
+                    gate.occupancy = False
+                    gate.aircraft_id = ""
+                    found = True
+                    break
+                k += 1
+            if found: break
+            j += 1
+        i += 1
+    return 0 if found else -1
+
+
+def AssignGatesAtTime(bcn, aircrafts, current_mins):
+    from src.LEBL import AssignGate
+
+    # 1. Liberar las puertas de aviones que despegan
+    i = 0
+    while i < len(aircrafts):
+        plane = aircrafts[i]
+
+        if plane.departure != "-":
+            dep_parts = plane.departure.split(":")
+            dep_mins = (int(dep_parts[0]) * 60) + int(dep_parts[1])
+
+            if dep_mins == current_mins:
+                FreeGate(bcn, plane.id)
+        i += 1
+
+    # 2. Asignar puertas a los que aterrizan
+    not_assigned_count = 0
+
+    j = 0
+    while j < len(aircrafts):
+        plane = aircrafts[j]
+
+        if plane.arrival != "-":
+            arr_parts = plane.arrival.split(":")
+            arr_mins = (int(arr_parts[0]) * 60) + int(arr_parts[1])
+
+            if arr_mins == current_mins:
+                gate_assigned = AssignGate(bcn, plane)
+
+                if gate_assigned == "":
+                    not_assigned_count += 1
+        j += 1
+    return not_assigned_count
+
+
+def PlotDayOccupancy(bcn, aircrafts):
+    _setup_plot_style()
+
+    # Asignacion de la noche
+    AssignNightGates(bcn, aircrafts)
+
+    hours_labels = [f"{h:02d}" for h in range(24)]
+    occupied_gates_per_hour = [0] * 24
+    rejected_per_hour = [0] * 24
+
+    # Simulamos el dia por horas
+    m = 0
+    total_occ = 0
+    while m < 1440:
+        hour_index = m // 60
+
+        rejected = AssignGatesAtTime(bcn, aircrafts, m)
+        rejected_per_hour[hour_index] += rejected
+
+        # Contamos numero de puertas ocupadas
+        if m % 60 == 59:
+            total_occ = 0
+
+            i = 0
+            while i < len(bcn.terminal):
+                terminal = bcn.terminal[i]
+
+                j = 0
+                while j < len(terminal.boarding_area):
+                    area = terminal.boarding_area[j]
+
+                    k = 0
+                    while k < len(area.gate):
+                        gate = area.gate[k]
+
+                        if gate.occupancy == True:
+                            total_occ += 1
+                        k += 1  # <-- Mantenido dentro del bucle de puertas
+                    j += 1  # <-- Mantenido dentro del bucle de áreas
+                i += 1  # <-- Mantenido dentro del bucle de terminales
+
+            occupied_gates_per_hour[hour_index] = total_occ
+        else:
+            occupied_gates_per_hour[hour_index] = total_occ
+        m += 1
+
+    fig, ax = plt.subplots(figsize=(10.5, 5.0), facecolor=CHART["bg"])
+
+    ax.bar(
+        hours_labels, occupied_gates_per_hour,
+        color=CHART["primary_light"], edgecolor="white", width=0.45, label="Puertas Ocupadas", zorder=3
+    )
+    ax.bar(
+        hours_labels, rejected_per_hour,
+        bottom=occupied_gates_per_hour,
+        color=CHART["non_schengen"], edgecolor="white", width=0.45, label="Aviones No Asignados", zorder=3
+    )
+
+    _style_axes(
+        ax,
+        title="Ocupación de Puertas y Saturación del Aeropuerto",
+        subtitle="Evolución del tráfico diario en Barcelona-El Prat",
+        xlabel="Franja horaria simulada",
+        ylabel="Número de aviones"
+    )
+    ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+    ax.grid(axis="y", zorder=0)
+    ax.legend(loc="upper right")
+
+    fig.tight_layout()
+    _save_and_show(fig, "day_occupancy_simulation.png")
+
+
 if __name__ == "__main__":
-    aircraft = LoadArrivals("../data/Arrivals.txt")
-    airports_db = LoadAirports("../data/Airports.txt")
+    arrivals_path = os.path.join(DATA_DIR, "Arrivals.txt")
+    departures_path = os.path.join(DATA_DIR, "Departures.txt")
+    airports_path = os.path.join(DATA_DIR, "Airports.txt")
+    structure_path = os.path.join(DATA_DIR, "Terminals.txt")
 
-    PlotArrivals(aircraft)
-    PlotAirlines(aircraft)
-    PlotFlightsType(aircraft)
+    aircraft = LoadArrivals(arrivals_path)
+    airports_db = LoadAirports(airports_path)
 
-    vuelos_largos, co2, med_co2 = LongDistanceArrivals(aircraft, airports_db)
+    # 1. Forzamos la visualización secuencial de las tres primeras gráficas
+    if aircraft:
+        PlotArrivals(aircraft)
+        PlotAirlines(aircraft)
+        PlotFlightsType(aircraft)
+        plt.show()
 
-    print(f"Vuelos > 2000km detectados: {len(vuelos_largos)}")
-    print(f"Impacto ambiental total: {co2:.2f} t/CO2")
-    print(f"Impacto medio por vuelo: {med_co2:.2f} t/CO2")
+        # 2. Carga directa de la estructura del aeropuerto y salidas
+    from src.LEBL import LoadAirportStructure
+
+    bcn = LoadAirportStructure(structure_path)
+    departures, status = LoadDepartures(departures_path)
+
+    # 3. Forzamos la ejecución de la simulación de puertas
+    all_movements = MergeMovements(aircraft, departures)
+    PlotDayOccupancy(bcn, all_movements)
+    plt.show()
+
+    # 4. Cálculo de distancias final
+    LongDistanceArrivals(aircraft, airports_db)

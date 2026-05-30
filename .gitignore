@@ -1,0 +1,21 @@
+# Salidas generadas
+output/*
+!output/.gitkeep
+
+# Gráficos no deben estar en data/
+data/*.png
+
+# IDE
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Artefactos sueltos de tests (por si se ejecutan en src/)
+src/SchengenAirports.txt
+src/Mapa.kml
+src/Airports.txt
