@@ -1,6 +1,6 @@
 # Gestión de Aeropuertos y Vuelos — LEBL
 
-Aplicación académica para gestionar bases de datos de aeropuertos, analizar vuelos de llegada y salida, y simular la asignación de puertas en el aeropuerto **LEBL** (Barcelona-El Prat). Incluye interfaz gráfica (Tkinter), gráficos con Matplotlib y exportación a Google Earth (KML).
+Programa para gestionar bases de datos de aeropuertos, analizar vuelos de llegada y salida y simular la asignación de puertas en el aeropuerto **LEBL** (Barcelona-El Prat). Incluye interfaz gráfica, gráficos y exportación a Google Earth.
 
 ## Requisitos
 
@@ -44,7 +44,7 @@ AirportManagmentProject-Version-4/
 |-------------------|-----|
 | `data/` | Datos de entrada oficiales del proyecto |
 | `output/` | Gráficos PNG, KML y exportaciones guardadas |
-| `src/` | Lógica de negocio; no guardar salidas aquí |
+| `src/` | Scripts |
 
 ## Cómo ejecutar la aplicación
 
