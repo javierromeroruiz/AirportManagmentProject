@@ -28,6 +28,11 @@ SCHENGEN_PREFIXES = [
 ]
 
 
+# ===============================================================
+#  FUNCIONES EXTRAS — Utilidades internas (graficos / salida)
+#  No aparecen en el enunciado del proyecto
+# ===============================================================
+
 def _ensure_output_dir():
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
@@ -117,6 +122,13 @@ def _save_and_show(fig, filename):
     plt.show()
 
 
+# ===============================================================
+#  FUNCIONES PROYECTO — Version 1 (airport.py, enunciado)
+#  Clases: Airport
+#  Funciones: IsSchengenAirport, SetSchengen, PrintAirport, LoadAirports,
+#  SaveSchengenAirports, AddAirport, RemoveAirport, PlotAirports, MapAirports
+# ===============================================================
+
 class Airport:
     def __init__(self, code, lat, lon):
         self.code = code
@@ -186,6 +198,7 @@ def LoadAirports(filename):
     return airports
 
 
+# Auxiliar de SaveSchengenAirports (no listado en el enunciado)
 def _dec_to_dms_str(value, is_latitude):
     if is_latitude:
         if value >= 0:

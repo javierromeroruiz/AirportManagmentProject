@@ -1,6 +1,14 @@
 import os
 
-from airport import IsSchengenAirport
+# ===============================================================
+#  FUNCIONES PROYECTO — Version 3 (LEBL.py, enunciado)
+#  Clases: BarcelonaAP, Terminal, BoardingArea, Gate
+#  Funciones: SetGates, LoadAirlines, LoadAirportStructure, GateOccupancy,
+#  IsAirlineInTerminal, SearchTerminal, AssignGate
+# ===============================================================
+
+# Necesario: interfaz.py importa src.LEBL; el modulo airport esta en src/
+from src.airport import IsSchengenAirport
 
 
 class BarcelonaAP:
