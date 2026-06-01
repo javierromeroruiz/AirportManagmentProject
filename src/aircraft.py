@@ -543,6 +543,12 @@ def LongDistanceArrivals(aircraft, airports_db):
 # --- Version 4 (enunciado): salidas, merge, puertas nocturnas, ocupacion ---
 
 def LoadDepartures(filename):
+    """
+        Carga desde un fichero la información de las salidas de aviones.
+
+        Lee cada línea del archivo, crea objetos Aircraft con los datos
+        encontrados y devuelve la lista de aeronaves cargadas.
+        """
     if not os.path.exists(filename):
         return [], -1
 
@@ -572,6 +578,10 @@ def LoadDepartures(filename):
 
 
 def _blank_movement_time(value):
+    """
+       Comprueba si una hora de llegada o salida está vacía
+       o no contiene información válida.
+       """
     return value in ("", "-", None)
 
 
@@ -634,7 +644,7 @@ def MergeMovements(arrivals, departures):
         used_dep = [False] * len(deps)
         id_merged = []
 
-        # Paso 1: mismo dia (llegada < salida)
+        # Paso 1: Empareja llegadas y salidas ocurridas el mismo día.
         for arr in arrs:
             merged = copy.copy(arr)
             arr_m = _time_to_minutes(arr.arrival)
@@ -660,7 +670,8 @@ def MergeMovements(arrivals, departures):
 
             id_merged.append(merged)
 
-        # Paso 2: pernocta (llegada tarde + salida madrugada del dia siguiente)
+        # Paso 2: Intenta emparejar llegadas tardías con salidas
+        # de madrugada del día siguiente.
         for merged in id_merged:
             if not _blank_movement_time(merged.departure):
                 continue
@@ -687,7 +698,8 @@ def MergeMovements(arrivals, departures):
                 merged.departure = dep.departure
 
         merged_list.extend(id_merged)
-
+        # Añade las salidas que no han podido asociarse
+        # a ninguna llegada.
         j = 0
         while j < len(deps):
             if not used_dep[j]:
@@ -726,6 +738,10 @@ def NightAircraft(aircrafts):
 
 
 def AssignNightGates(bcn, aircrafts):
+    """
+       Asigna puertas de embarque a los aviones que
+       permanecen en el aeropuerto durante la noche.
+       """
     from src.LEBL import AssignGate
 
     if not aircrafts:
@@ -741,6 +757,12 @@ def AssignNightGates(bcn, aircrafts):
 
 
 def FreeGate(bcn, id):
+    """
+       Libera la puerta ocupada por un avión concreto.
+
+       Se utiliza normalmente cuando el avión despega
+       y deja disponible la puerta.
+       """
     found = False
 
     i = 0
@@ -768,9 +790,16 @@ def FreeGate(bcn, id):
 
 
 def AssignGatesAtTime(bcn, aircrafts, current_mins):
+    """
+       Gestiona las puertas de embarque en un instante concreto.
+
+       Primero libera las puertas de los aviones que salen
+       y después intenta asignar puertas a los que llegan.
+       """
     from src.LEBL import AssignGate
 
-    # 1. Liberar las puertas de aviones que despegan
+    # 1. Libera las puertas de los aviones cuyo horario
+    # de salida coincide con el minuto actual.
     i = 0
     while i < len(aircrafts):
         plane = aircrafts[i]
@@ -783,7 +812,8 @@ def AssignGatesAtTime(bcn, aircrafts, current_mins):
                 FreeGate(bcn, plane.id)
         i += 1
 
-    # 2. Asignar puertas a los que aterrizan
+    # 2. Asigna puertas a los aviones cuya llegada
+    # coincide con el minuto actual.
     not_assigned_count = 0
 
     j = 0
@@ -804,16 +834,27 @@ def AssignGatesAtTime(bcn, aircrafts, current_mins):
 
 
 def PlotDayOccupancy(bcn, aircrafts):
+    """
+       Simula el funcionamiento del aeropuerto durante un día
+       completo y genera una gráfica de ocupación de puertas.
+
+       También muestra cuántos aviones no han podido recibir
+       una puerta de embarque.
+       """
     _setup_plot_style()
 
-    # Asignacion de la noche
+    # Configura el estilo de la gráfica y asigna
+    # las puertas a los aviones que pernoctan.
     AssignNightGates(bcn, aircrafts)
 
     hours_labels = [f"{h:02d}" for h in range(24)]
     occupied_gates_per_hour = [0] * 24
     rejected_per_hour = [0] * 24
 
-    # Simulamos el dia por horas
+    # Recorre minuto a minuto todo el día simulando:
+    # - Llegadas
+    # - Salidas
+    # - Ocupación de puertas
     m = 0
     total_occ = 0
     while m < 1440:
@@ -822,7 +863,8 @@ def PlotDayOccupancy(bcn, aircrafts):
         rejected = AssignGatesAtTime(bcn, aircrafts, m)
         rejected_per_hour[hour_index] += rejected
 
-        # Contamos numero de puertas ocupadas
+        # Cuenta cuántas puertas están ocupadas
+        # al final de cada hora.
         if m % 60 == 59:
             total_occ = 0
 
@@ -849,6 +891,9 @@ def PlotDayOccupancy(bcn, aircrafts):
             occupied_gates_per_hour[hour_index] = total_occ
         m += 1
 
+    # Genera una gráfica de barras donde se representan:
+    # - Puertas ocupadas
+    # - Aviones sin puerta asignada
     fig, ax = plt.subplots(figsize=(10.5, 5.0), facecolor=CHART["bg"])
 
     ax.bar(
@@ -872,6 +917,7 @@ def PlotDayOccupancy(bcn, aircrafts):
     ax.grid(axis="y", zorder=0)
     ax.legend(loc="upper right")
 
+    # Guarda y muestra la gráfica resultante.
     fig.tight_layout()
     _save_and_show(fig, "day_occupancy_simulation.png")
 
