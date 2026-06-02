@@ -1,25 +1,28 @@
-# --IMPORTS--
-# Importamos tkinter que es la librería para hacer ventanas en Python
-# messagebox sirve para mostrar popups de error/info
-# filedialog sirve para abrir el explorador de archivos
-# ttk son los widgets "bonitos" de tkinter (botones, pestañas, etc.)
+# =============================================================================
+# interfaz.py — Ventana grafica del proyecto
+#
+# Se enlazan las funciones de airport.py, aircraft.py y LEBL.py con botones
+# y campos de texto. Los datos cargados se guardan en variables globales.
+# =============================================================================
+
 import tkinter as tk
 from tkinter import messagebox, filedialog, ttk
-import os  # os nos deja trabajar con rutas de archivos y carpetas
+import os
+import sys
 import re
 import copy
 import threading
 import queue
 
-# Matplotlib: backend Agg + canvas embebido (evita segundo Tk y errores al cerrar)
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-# Estas dos líneas permiten meter gráficos de matplotlib dentro de una ventana de tkinter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
-# Importamos todas las funciones que hemos hecho en otros archivos del proyecto
-# Las de airport.py son para gestionar los aeropuertos (cargar, añadir, borrar, etc.)
 from src.airport import (
     Airport,
     LoadAirports,
@@ -30,7 +33,6 @@ from src.airport import (
     PlotAirports,
     MapAirports,
 )
-# Las de aircraft.py son para gestionar vuelos (llegadas, salidas, mapas, etc.)
 from src.aircraft import (
     Aircraft,
     LoadArrivals,
@@ -38,10 +40,12 @@ from src.aircraft import (
     SaveFlights,
     PlotAirlines,
     PlotFlightsType,
-    LoadAirports as LoadAirportsDB,  # esta función tiene el mismo nombre que la de arriba, así que le ponemos un alias
+    LoadAirports as LoadAirportsDB,
     MapFlights,
+    MapLongDistanceFlights,
     LongDistanceArrivals,
-    _flights_kml_path,
+    FlightsKmlPath,
+    LongDistanceKmlPath,
     LoadDepartures,
     MergeMovements,
     NightAircraft,
@@ -50,53 +54,41 @@ from src.aircraft import (
     AssignGatesAtTime,
     PlotDayOccupancy
 )
-# Necesario para animacion LEBL integrada en pestaña LEBL
-from src.aircraft import GenerateLEBLAnimation, create_lebl_animation_widget, LEBL_ANIM_FLIGHT_LIMIT
-# Las de LEBL.py son específicas para el aeropuerto de Barcelona
+from src.aircraft import GenerateLEBLAnimation, CreateLEBLAnimationWidget, LEBL_ANIM_FLIGHT_LIMIT
 from src.LEBL import LoadAirportStructure, GateOccupancy, AssignGate
 
-# Calculamos dónde está el archivo principal y las carpetas de datos y salida
-# así el programa funciona aunque lo muevas de carpeta
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(BASE_DIR, "data")      # carpeta donde están los archivos de entrada
-OUTPUT_DIR = os.path.join(BASE_DIR, "output")  # carpeta donde se guardan los resultados
+DATA_DIR = os.path.join(BASE_DIR, "data")
+OUTPUT_DIR = os.path.join(BASE_DIR, "output")
 
 # ===============================================================
-#  ESTADO GLOBAL
-#  Estas variables se usan en todo el programa para guardar los datos
-#  que el usuario va cargando. Son "globales" porque las necesitamos
-#  desde muchas funciones distintas.
+#  ESTADO GLOBAL — datos en memoria tras cada carga desde archivo
 # ===============================================================
-airports = []         # lista de aeropuertos cargados
-aircrafts = []        # lista de vuelos (llegadas) cargados
-airports_db = {}      # diccionario de aeropuertos (para buscar rápido por código)
-departures = []       # lista de vuelos de salida
-all_movements = []    # lista combinada de llegadas y salidas
-night_aircrafts = []  # aviones que se quedan a dormir en el aeropuerto
-bcn_airport = None    # estructura del aeropuerto de Barcelona (puertas, terminales...)
+airports = []
+aircrafts = []
+airports_db = {}
+departures = []
+all_movements = []
+night_aircrafts = []
+bcn_airport = None
 
-# Variables para controlar el panel de gráficos
-_plot_canvas = None    # el "lienzo" donde se dibuja el gráfico
-_plot_toolbar = None   # la barra de herramientas del gráfico (zoom, guardar, etc.)
-_original_plt_show = plt.show  # guardamos el plt.show original por si lo necesitamos restaurar
+_plot_canvas = None
+_plot_toolbar = None
+_original_plt_show = plt.show
 
 # ===============================================================
 #  VENTANA PRINCIPAL
-#  Aquí creamos la ventana principal de la aplicación
 # ===============================================================
 app = tk.Tk()
 app.title("Gestor de Aeropuertos y Vuelos — LEBL")
 
-# Calculamos el tamaño y posición para que la ventana salga centrada en la pantalla
 window_width, window_height = 1100, 980
 sw, sh = app.winfo_screenwidth(), app.winfo_screenheight()
 app.geometry(
     f"{window_width}x{window_height}+{(sw - window_width) // 2}+{(sh - window_height) // 2}"
 )
-app.minsize(900, 750)  # tamaño mínimo para que no se rompa el diseño
+app.minsize(900, 750)
 
-# Intentamos cargar el tema visual "forest-light" que está en la carpeta data
-# Si no está disponible, simplemente usamos el tema por defecto (no pasa nada)
 try:
     theme_tcl = os.path.join(DATA_DIR, "forest-light.tcl")
     app.tk.call("source", theme_tcl)
@@ -106,234 +98,19 @@ except tk.TclError as e:
 
 
 # ===============================================================
-#  FUNCIONES EXTRAS — Panel de graficos embebidos (no en enunciado)
-# ===============================================================
-
-def _clear_plot_widgets():
-    """Borra todo lo que haya en el panel de gráficos para poder poner uno nuevo."""
-    global _plot_canvas, _plot_toolbar
-    if _plot_canvas is not None:
-        try:
-            _plot_canvas.get_tk_widget().destroy()
-        except Exception:
-            pass
-    if _plot_toolbar is not None:
-        try:
-            _plot_toolbar.destroy()
-        except Exception:
-            pass
-    for child in plot_body.winfo_children():
-        try:
-            child.destroy()
-        except Exception:
-            pass
-    _plot_canvas = None
-    _plot_toolbar = None
-
-
-def close_plot_panel():
-    """Cierra el gráfico y devuelve el espacio a los controles superiores."""
-    global _plot_canvas, _plot_toolbar
-    plt.close("all")       # cerramos todos los gráficos de matplotlib
-    _clear_plot_widgets()  # limpiamos el panel visual
-    plot_frame.grid_remove()         # ocultamos el panel
-    root_frame.rowconfigure(1, weight=0)  # ajustamos el espacio de la ventana
-    _plot_canvas = None
-    _plot_toolbar = None
-    set_status("Gráfico cerrado.", "black")
-
-
-def _show_plot_panel():
-    """Hace visible el panel inferior de gráficos."""
-    plot_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
-    root_frame.rowconfigure(1, weight=2)  # le damos más espacio en la pantalla
-
-
-def _render_figure(fig):
-    """
-    Recibe una figura de matplotlib y la dibuja dentro de la ventana.
-    Esto es para que los gráficos no abran en una ventana aparte sino aquí dentro.
-    """
-    global _plot_canvas, _plot_toolbar
-    _show_plot_panel()   # mostramos el panel
-    _clear_plot_widgets()  # borramos lo que hubiera antes
-
-    # Creamos el "lienzo" de matplotlib y lo metemos dentro del panel
-    _plot_canvas = FigureCanvasTkAgg(fig, master=plot_body)
-    _plot_canvas.draw()
-    _plot_canvas.get_tk_widget().pack(fill="both", expand=True)
-
-    # Añadimos la barra de herramientas (zoom, guardar imagen, etc.)
-    toolbar_row = ttk.Frame(plot_body)
-    toolbar_row.pack(fill="x")
-    _plot_toolbar = NavigationToolbar2Tk(_plot_canvas, toolbar_row)
-    _plot_toolbar.update()
-
-
-def _embedded_plt_show(block=None):
-    """
-    Esta función reemplaza al plt.show() normal de matplotlib.
-    En lugar de abrir una ventana nueva, dibuja el gráfico dentro de nuestra app.
-    """
-    if plt.get_fignums():  # si hay algún gráfico abierto...
-        _render_figure(plt.gcf())  # lo mostramos en el panel
-    return None
-
-
-# Sustituimos plt.show por nuestra versión personalizada
-plt.show = _embedded_plt_show
-
-
-def run_embedded_plot(plot_fn, *args):
-    """
-    Ejecuta una función que genera un gráfico y lo muestra en el panel inferior.
-    Recibe la función a ejecutar y los argumentos que necesita.
-    """
-    plt.close("all")  # limpiamos gráficos anteriores
-    try:
-        plot_fn(*args)  # ejecutamos la función de gráfico con sus argumentos
-    except Exception as exc:
-        # Si algo sale mal, mostramos el error y no seguimos
-        set_status(f"✘ Error al generar el gráfico: {exc}", "red")
-        messagebox.showerror("Error de gráfico", str(exc))
-        return
-
-    # Si se generó algún gráfico, lo mostramos
-    if plt.get_fignums():
-        _render_figure(plt.gcf())
-        set_status("Gráfico actualizado en el panel inferior.", "green")
-    else:
-        set_status("⚠ La función no generó ningún gráfico.", "orange")
-
-
-# ===============================================================
-#  FUNCIONES EXTRAS — Helpers de UX (tooltips, estado, filas de archivo)
-# ===============================================================
-
-
-def set_status(msg: str, color: str = "black"):
-    """Actualiza el mensaje de la barra de estado en la parte inferior de la ventana."""
-    status_var.set(f"  {msg}")
-    status_label.config(foreground=color)
-
-
-def make_file_row(
-    parent,
-    label_text: str,
-    filetypes=None,
-    row: int = 0,
-    save_mode: bool = False,
-    default_ext: str = ".txt",
-):
-    """
-    Crea una fila con una etiqueta, un campo de texto y un botón de carpeta.
-    Sirve para que el usuario pueda escribir o buscar la ruta de un archivo.
-    Devuelve el campo de texto para que podamos leer qué escribió el usuario.
-    """
-    if filetypes is None:
-        filetypes = [("Todos los archivos", "*.*")]
-
-    # Etiqueta (el texto descriptivo a la izquierda)
-    ttk.Label(parent, text=label_text).grid(
-        row=row, column=0, padx=(0, 6), pady=4, sticky="e"
-    )
-
-    # Campo de texto donde aparece la ruta del archivo
-    entry = ttk.Entry(parent, width=22)
-    entry.grid(row=row, column=1, padx=4, pady=4, sticky="ew")
-
-    def browse():
-        """Abre el explorador de archivos cuando se pulsa el botón de carpeta."""
-        if save_mode:
-            # En modo guardado, abre un diálogo para elegir dónde guardar
-            path = filedialog.asksaveasfilename(
-                defaultextension=default_ext,
-                filetypes=filetypes,
-                title=f"Guardar — {label_text}",
-            )
-        else:
-            # En modo apertura, abre un diálogo para elegir qué archivo abrir
-            path = filedialog.askopenfilename(
-                filetypes=filetypes, title=f"Abrir — {label_text}"
-            )
-        if path:
-            # Si el usuario eligió algo, lo ponemos en el campo de texto
-            entry.delete(0, tk.END)
-            entry.insert(0, path)
-
-    # Botón con el icono de carpeta
-    btn = ttk.Button(parent, text="📂", width=3, command=browse)
-    btn.grid(row=row, column=2, padx=(2, 0), pady=4)
-    Tooltip(btn, "Explorar archivos")
-    parent.columnconfigure(1, weight=1)
-    return entry  # devolvemos el campo para que el caller pueda leer la ruta
-
-
-class Tooltip:
-    """
-    Clase que añade un pequeño texto de ayuda cuando pasas el ratón por encima de un botón.
-    Es muy útil para que el usuario sepa qué hace cada botón sin tener que adivinarlo.
-    """
-
-    def __init__(self, widget, text: str):
-        self.widget = widget
-        self.text = text
-        self.tw = None  # ventanita del tooltip (None cuando está oculto)
-        # Conectamos eventos de ratón para mostrar/ocultar el tooltip
-        widget.bind("<Enter>", self._show)  # cuando el ratón entra
-        widget.bind("<Leave>", self._hide)  # cuando el ratón sale
-
-    def _show(self, _=None):
-        """Muestra el tooltip cerca del widget."""
-        x, y, _, cy = (
-            self.widget.bbox("insert") if hasattr(self.widget, "bbox") else (0, 0, 0, 0)
-        )
-        # Calculamos la posición para que salga justo debajo del botón
-        x += self.widget.winfo_rootx() + 28
-        y += self.widget.winfo_rooty() + cy + 20
-        # Creamos una ventanita sin bordes ni barra de título
-        self.tw = tk.Toplevel(self.widget)
-        self.tw.wm_overrideredirect(True)
-        self.tw.wm_geometry(f"+{x}+{y}")
-        tk.Label(
-            self.tw,
-            text=self.text,
-            justify="left",
-            background="#ffffe0",  # fondo amarillo clarito, como los post-its
-            relief="solid",
-            borderwidth=1,
-            font=("Segoe UI", 9),
-        ).pack()
-
-    def _hide(self, _=None):
-        """Oculta y destruye el tooltip cuando el ratón se va."""
-        if self.tw:
-            self.tw.destroy()
-            self.tw = None
-
-
-# ===============================================================
-#  FUNCIONES PROYECTO — interfaz.py (enunciado, Versiones 1–4)
-#  V1: update_listbox, load_airports, apply_schengen, save_airports,
-#      plot_data, map_data, add_airport, delete_airport
-#  V2: load_arrivals_data, plot_arrivals_data, save_flights_data,
-#      plot_airlines_data, plot_flights_type_data, map_flights_data,
-#      show_long_distance, load_departures_data
-#  V3: load_airports_estructure_ui, assign_gates_ui, update_gates_listbox
-#  V4: merge_movements_ui, night_aircraft_ui, assign_night_gates_ui,
-#      plot_day_occupancy_ui
+#  FUNCIONES PROYECTO — interfaz.py
 # ===============================================================
 
 
 def update_listbox(items=None):
     """
-    Refresca la lista de la derecha con los aeropuertos que hay en memoria.
-    Si no le pasas nada, muestra todos los aeropuertos cargados.
+    Se vacia la lista del panel derecho y se vuelve a llenar linea a linea.
+    Por defecto se muestran los aeropuertos de la variable global airports,
+    con codigo, coordenadas y si son Schengen. Tambien se actualiza el contador superior.
     """
-    listbox.delete(0, tk.END)  # borramos todo lo que hay
+    listbox.delete(0, tk.END)
     if items is None:
         items = airports
-    # Por cada aeropuerto, creamos una línea con su código, coordenadas y si es Schengen
     for a in items:
         sch = "✔ Schengen" if a.schengen else "✘ No Schengen"
         listbox.insert(
@@ -342,10 +119,9 @@ def update_listbox(items=None):
     lbl_count.config(text=f"{len(airports)} aeropuerto(s) en memoria")
 
 
-# --- Extras: soporte puertas LEBL / animacion (no en enunciado) ---
-
 def _reset_bcn_gate_occupancy(bcn):
-    """Deja todas las puertas libres (p. ej. tras simular o asignar de nuevo)."""
+    """Antes de una nueva asignacion o simulacion, se recorren
+    todas las puertas de bcn_airport y se marcan libres (sin matricula)."""
     for terminal in bcn.terminal:
         for area in terminal.boarding_area:
             for gate in area.gate:
@@ -355,8 +131,9 @@ def _reset_bcn_gate_occupancy(bcn):
 
 def _prepare_lebl_gate_operations(require_movements=False):
     """
-    Comprueba estructura LEBL y carga vuelos desde Arrivals/Departures
-    de la pestaña LEBL (no hace falta repetir carga en pestaña Vuelos).
+    Punto comun para botones de LEBL: comprueba que Terminals.txt este cargado,
+    sincroniza vuelos desde la pestaña LEBL (Arrivals y opcionalmente Departures)
+    y, si se pide, exige que ya existan movimientos combinados.
     """
     if not bcn_airport:
         return False, "Carga primero la estructura de LEBL (Terminals.txt)."
@@ -372,19 +149,17 @@ def _prepare_lebl_gate_operations(require_movements=False):
 
 
 def _focus_dialog_listbox():
-    """Muestra el panel derecho en «Cuadro dialogo» (donde esta la listbox)."""
+    """Cambia la pestana derecha a «Cuadro dialogo» para que se vea la lista de resultados."""
     try:
         right_notebook.select(tab_dialog)
     except Exception:
         pass
 
 
-# --- V3 (enunciado): ocupacion de puertas ---
-
 def update_gates_listbox():
     """
-    Muestra en la lista el estado de cada puerta del aeropuerto de Barcelona.
-    Las ocupadas aparecen en rojo y las libres en verde (con emojis).
+    Lista el estado de cada puerta de Barcelona: ocupada o libre,
+    con la matricula del avion si corresponde.
     """
     if not bcn_airport:
         set_status("⚠ Carga primero la estructura de LEBL.", "orange")
@@ -393,7 +168,6 @@ def update_gates_listbox():
             "Carga primero la estructura con «Cargar estructura LEBL».",
         )
         return
-    # Pedimos la ocupación actual de todas las puertas
     ocupacion = GateOccupancy(bcn_airport)
     _focus_dialog_listbox()
     listbox.delete(0, tk.END)
@@ -406,7 +180,6 @@ def update_gates_listbox():
         )
         return
     n_occ = 0
-    # Mostramos cada puerta con su estado
     for p in ocupacion:
         puerta = p["name"]
         estado = p["status"]
@@ -429,20 +202,17 @@ def update_gates_listbox():
     )
 
 
-# --- V1 (enunciado): base de datos de aeropuertos ---
-
 def load_airports():
     """
-    Carga los aeropuertos desde el archivo que haya en el campo de texto.
-    Los guarda en dos formatos: lista (airports) y diccionario (airports_db).
-    El diccionario es más rápido para buscar por código ICAO.
+    Se lee la ruta del campo «Archivo de aeropuertos» (debe ser Airports.txt, no Terminals).
+    LoadAirports rellena la lista; LoadAirportsDB el diccionario para mapas y distancias.
+    Si no hay datos validos, se muestra un aviso que explica el formato esperado.
     """
     global airports, airports_db
     filename = archivo_entry.get().strip()
     if not filename:
         set_status("⚠ Selecciona un archivo primero.", "orange")
         return
-    # Cargamos en los dos formatos a la vez
     loaded_data = LoadAirports(filename)
     loaded_db = LoadAirportsDB(filename)
     if loaded_data:
@@ -458,15 +228,23 @@ def load_airports():
         )
     else:
         set_status("✘ No se pudieron cargar aeropuertos.", "red")
+        if os.path.isfile(filename):
+            hint = (
+                "\n\nEl archivo existe pero no tiene filas CODE LAT LON "
+                "(formato de Airports.txt).\n"
+                "Si es Terminals.txt, usa la pestaña LEBL → «Cargar estructura»."
+            )
+        else:
+            hint = "\n\nComprueba la ruta o el nombre del archivo."
         messagebox.showerror(
-            "Error de carga", f"No se pudo leer el archivo:\n{filename}"
+            "Error de carga", f"No se pudieron cargar aeropuertos desde:\n{filename}{hint}"
         )
 
 
 def apply_schengen():
     """
-    Recorre todos los aeropuertos cargados y les marca si pertenecen al espacio Schengen o no.
-    La función SetSchengen lo decide según el código del aeropuerto.
+    Marca cada aeropuerto cargado como Schengen o no Schengen
+    segun las dos primeras letras de su codigo ICAO.
     """
     if not airports:
         set_status("⚠ No hay aeropuertos en memoria.", "orange")
@@ -484,14 +262,13 @@ def save_airports():
     """
     filename = save_entry.get().strip()
     if not filename:
-        # Si no hay ruta, pedimos al usuario que elija una
         filename = filedialog.asksaveasfilename(
             defaultextension=".txt",
             filetypes=[("Archivos de texto", "*.txt"), ("Todos", "*.*")],
             title="Guardar aeropuertos Schengen",
         )
         if not filename:
-            return  # el usuario canceló, no hacemos nada
+            return
         save_entry.delete(0, tk.END)
         save_entry.insert(0, filename)
     result = SaveSchengenAirports(airports, filename)
@@ -533,21 +310,18 @@ def map_data():
             set_status("✘ Error al guardar el mapa.", "red")
 
 
-# --- V1 (enunciado): edicion manual de aeropuertos ---
-
 def add_airport():
     """
     Añade un aeropuerto nuevo a la lista usando los datos del formulario.
     Comprueba que el código sea de 4 letras y que las coordenadas sean números.
     """
-    code = code_entry.get().upper().strip()  # lo ponemos en mayúsculas siempre
+    code = code_entry.get().upper().strip()
     try:
         lat = float(lat_entry.get())
         lon = float(lon_entry.get())
         if len(code) == 4 and code.isalpha():
             AddAirport(airports, Airport(code, lat, lon))
             update_listbox()
-            # Limpiamos los campos para que sea más fácil añadir el siguiente
             code_entry.delete(0, tk.END)
             lat_entry.delete(0, tk.END)
             lon_entry.delete(0, tk.END)
@@ -557,7 +331,6 @@ def add_airport():
                 "Código inválido", "El código ICAO debe tener exactamente 4 letras."
             )
     except ValueError:
-        # Si el usuario pone letras donde tienen que ir números, avisamos
         messagebox.showerror("Error", "Latitud y longitud deben ser números.")
 
 
@@ -565,7 +338,7 @@ def delete_airport():
     """Elimina un aeropuerto de la lista buscándolo por su código ICAO."""
     code = del_entry.get().upper().strip()
     if not code:
-        return  # si el campo está vacío, no hacemos nada
+        return
     result = RemoveAirport(airports, code)
     if result == 0:
         update_listbox()
@@ -578,10 +351,12 @@ def delete_airport():
         )
 
 
-# --- V2 (enunciado): vuelos y mapas ---
-
 def load_arrivals_data():
-    """Carga el archivo de llegadas y guarda todos los vuelos en la lista 'aircrafts'."""
+    """
+    Se lee la ruta del campo de llegadas y se llama a LoadArrivals.
+    Los aviones quedan en la variable global aircrafts y se actualiza la lista derecha.
+    Si el archivo esta vacio o mal formado, se muestra error.
+    """
     global aircrafts
     filename = arrivals_entry.get().strip()
     if not filename:
@@ -616,7 +391,7 @@ def load_departures_data():
 
 
 def plot_arrivals_data():
-    """Muestra un gráfico con las horas de llegada de los vuelos."""
+
     if aircrafts:
         run_embedded_plot(PlotArrivals, aircrafts)
     else:
@@ -661,10 +436,9 @@ def save_flights_data():
             set_status("✘ Error al guardar vuelos.", "red")
 
 
-# --- Extras: carga automatica de aeropuertos / llegadas (soporte KML y >2000 km) ---
-
 def _ensure_airports_db_for_flights():
-    """Carga Airports.txt en airports_db si hace falta (KML, >2000 km)."""
+    """Si aun no hay diccionario de aeropuertos o falta LEBL,
+    se carga Airports.txt desde el campo de la pestaña Base de datos."""
     global airports_db, airports
     if airports_db and "LEBL" in airports_db:
         return True
@@ -690,7 +464,8 @@ def _ensure_airports_db_for_flights():
 
 
 def _ensure_arrivals_for_flights():
-    """Carga llegadas en aircrafts si el usuario no pulsó «Cargar» en Vuelos."""
+    """Si aircrafts esta vacio, se intenta cargar Arrivals.txt
+    desde el campo de la pestaña Vuelos sin pedir al usuario que pulse otra vez."""
     global aircrafts
     if aircrafts:
         return True
@@ -719,7 +494,7 @@ def map_flights_data():
         set_status("⚠ Carga vuelos y aeropuertos primero.", "orange")
         return
     res = MapFlights(aircrafts, airports_db)
-    kml_path = _flights_kml_path()
+    kml_path = FlightsKmlPath()
     if res == 0:
         set_status("✔ 'flights.kml' generado correctamente.", "green")
         messagebox.showinfo(
@@ -737,38 +512,45 @@ def map_flights_data():
 
 def show_long_distance():
     """
-    Muestra información sobre los vuelos que vienen de más de 2000 km.
-    También calcula el CO₂ total y el promedio por vuelo.
+    Se comprueba que haya vuelos y base de aeropuertos cargados.
+    LongDistanceArrivals calcula distancias, CO2 total y lista de vuelos > 2000 km.
+    Se muestra el resumen en un cuadro y, si aplica, se genera un KML solo con rutas largas (EXTRA).
     """
     if not _ensure_arrivals_for_flights() or not _ensure_airports_db_for_flights():
         set_status("⚠ Carga vuelos y aeropuertos primero.", "orange")
         return
     especiales, co2_total, co2_medio = LongDistanceArrivals(aircrafts, airports_db)
-    set_status(f"✔ {len(especiales)} vuelos a más de 2000 km.", "green")
+    res_kml = MapLongDistanceFlights(aircrafts, airports_db)
+    kml_ld = LongDistanceKmlPath()
+    if res_kml == 0:
+        set_status(f"✔ {len(especiales)} vuelos largos + KML generado.", "green")
+        msg_kml = f"\nKML larga distancia:\n{kml_ld}"
+    else:
+        set_status(f"✔ {len(especiales)} vuelos largos (sin KML).", "green")
+        msg_kml = "\n(No se pudo crear el KML de larga distancia.)"
     messagebox.showinfo(
         "Larga Distancia",
         f"Vuelos a más de 2000 km: {len(especiales)}\n"
         f"CO₂ total (solo esos vuelos): {co2_total:.2f} t\n"
-        f"CO₂ medio por vuelo largo: {co2_medio:.2f} t",
+        f"CO₂ medio por vuelo largo: {co2_medio:.2f} t"
+        + msg_kml,
     )
 
 
-# --- V4 (enunciado): merge, aviones nocturnos, puertas ---
-
 def merge_movements_ui():
     """
-    Combina la lista de llegadas con la de salidas para tener todos los movimientos juntos.
-    Esto es necesario para saber qué aviones se quedan a dormir en el aeropuerto.
+    Se cargan llegadas y salidas si aun no estan en memoria.
+    MergeMovements une por matricula y guarda el resultado en all_movements.
+    La lista del panel derecho muestra el resumen de cada movimiento combinado.
     """
     global all_movements
-    # Comprobamos que estén cargados los dos archivos antes de combinarlos
     if not aircrafts:
         set_status("⚠ Carga primero las llegadas.", "orange")
-        messagebox.showwarning("Faltan llegadas", "Primero debes cargar el archivo de llegadas.")
+        messagebox.showwarning("Faltan llegadas", "Primero hay que cargar el archivo de llegadas.")
         return
     if not departures:
         set_status("⚠ Carga primero las salidas.", "orange")
-        messagebox.showwarning("Faltan salidas", "Primero debes cargar el archivo de salidas.")
+        messagebox.showwarning("Faltan salidas", "Primero hay que cargar el archivo de salidas.")
         return
     result = MergeMovements(aircrafts, departures)
     if result == -1:
@@ -791,8 +573,9 @@ def merge_movements_ui():
 
 def night_aircraft_ui():
     """
-    Detecta qué aviones llegan pero no salen el mismo día, es decir, se quedan a pasar la noche.
-    Guarda esa lista en 'night_aircrafts' para poder asignarles puerta después.
+    Hace falta tener movimientos combinados (llegadas + salidas).
+    NightAircraft filtra los que pernoctan y los guarda en night_aircrafts.
+    La lista del panel derecho muestra matricula, origen y horas de cada uno.
     """
     global night_aircrafts
     if not aircrafts:
@@ -841,12 +624,11 @@ def night_aircraft_ui():
     )
 
 
-# --- V3 (enunciado): estructura LEBL y asignacion de puertas ---
-
 def load_airports_estructure_ui():
     """
-    Carga el archivo con la estructura del aeropuerto de Barcelona:
-    terminales, puertas de embarque, zonas, etc.
+    Se usa el archivo del campo de estructura (Terminals.txt) en la pestaña LEBL.
+    LoadAirportStructure crea el objeto con terminales, areas y puertas en bcn_airport.
+    Si va bien, se actualiza la lista de puertas y un mensaje de confirmacion.
     """
     global bcn_airport
     filename = structure_entry.get().strip()
@@ -868,8 +650,9 @@ def load_airports_estructure_ui():
 
 def assign_gates_ui():
     """
-    Asigna automáticamente una puerta de embarque a cada vuelo cargado.
-    Al final muestra cuántas se asignaron bien y cuántas no tuvieron puerta disponible.
+    Primero se comprueba que exista estructura LEBL y vuelos en Arrivals.
+    Se dejan todas las puertas libres y, para cada llegada, se llama a AssignGate.
+    Al terminar se muestra cuantas puertas se asignaron y cuantas no tuvieron sitio.
     """
     global bcn_airport, aircrafts
     ok, msg = _prepare_lebl_gate_operations()
@@ -879,7 +662,6 @@ def assign_gates_ui():
         return
     _reset_bcn_gate_occupancy(bcn_airport)
     exitos = fallidos = 0
-    # Intentamos asignar puerta a cada avión uno por uno
     for ac in aircrafts:
         if AssignGate(bcn_airport, ac) != "":
             exitos += 1
@@ -897,9 +679,9 @@ def assign_gates_ui():
 
 def assign_night_gates_ui():
     """
-    Asigna puertas de embarque específicamente a los aviones que se quedan de noche.
-    Es diferente a la asignación normal porque los aviones nocturnos necesitan puertas
-    que estén libres durante toda la noche.
+    Se comprueba estructura y movimientos combinados (llegadas + salidas).
+    AssignNightGates asigna puerta a cada avion que pernocta, distinto de la asignacion
+    hora a hora del dia. Al terminar se actualiza la lista de puertas.
     """
     ok, msg = _prepare_lebl_gate_operations(require_movements=True)
     if not ok:
@@ -916,8 +698,8 @@ def assign_night_gates_ui():
 
 def plot_day_occupancy_ui():
     """
-    Simula la ocupación de todas las puertas a lo largo de un día completo
-    y muestra el resultado como un gráfico. Muy útil para ver si hay horas punta.
+    Se comprueba estructura LEBL y movimientos combinados.
+    Se llama a PlotDayOccupancy, que simula minuto a minuto y abre el grafico de ocupacion.
     """
     ok, msg = _prepare_lebl_gate_operations(require_movements=True)
     if not ok:
@@ -925,7 +707,7 @@ def plot_day_occupancy_ui():
         messagebox.showwarning("Simulación diaria", msg)
         return
     try:
-        # La simulación modifica ocupación de puertas; no tocar bcn_airport en vivo.
+
         bcn_sim = copy.deepcopy(bcn_airport)
         PlotDayOccupancy(bcn_sim, all_movements)
         set_status(
@@ -940,52 +722,224 @@ def plot_day_occupancy_ui():
         print(e)
 
 
+#  Que aporta el bloque EXTRA (resumen)
+#
+#  Arriba estan los botones y pestañas del proyecto (aeropuertos, vuelos, LEBL,
+#  movimientos, nocturnos, puertas). Lo de abajo mejora la experiencia de uso:
+#  graficos dentro de la misma ventana, barra de estado, carga automatica de
+#  Airports.txt o Arrivals.txt cuando hace falta para mapas o KML, sincronizacion
+#  de vuelos desde la pestaña LEBL y animacion del aeropuerto en el panel derecho
+#  (mapa, reloj, velocidad).
+
+# ===============================================================
+#  FUNCIONES EXTRAS
+# ===============================================================
+
+def _clear_plot_widgets():
+    """Destruye el canvas y la barra de herramientas del panel de graficos
+    para poder dibujar otro grafico nuevo."""
+    global _plot_canvas, _plot_toolbar
+    if _plot_canvas is not None:
+        try:
+            _plot_canvas.get_tk_widget().destroy()
+        except Exception:
+            pass
+    if _plot_toolbar is not None:
+        try:
+            _plot_toolbar.destroy()
+        except Exception:
+            pass
+    for child in plot_body.winfo_children():
+        try:
+            child.destroy()
+        except Exception:
+            pass
+    _plot_canvas = None
+    _plot_toolbar = None
+
+
+def close_plot_panel():
+    """Oculta el panel inferior de graficos y limpia los widgets de matplotlib."""
+    global _plot_canvas, _plot_toolbar
+    plt.close("all")
+    _clear_plot_widgets()
+    plot_frame.grid_remove()
+    root_frame.rowconfigure(1, weight=0)
+    _plot_canvas = None
+    _plot_toolbar = None
+    set_status("Gráfico cerrado.", "black")
+
+
+def _show_plot_panel():
+    """Muestra el panel de graficos en la parte inferior de la ventana."""
+    plot_frame.grid(row=1, column=0, sticky="nsew", pady=(10, 0))
+    root_frame.rowconfigure(1, weight=2)
+
+
+def _render_figure(fig):
+    """Toma una figura de matplotlib y la incrusta en el panel con barra de zoom/guardar."""
+    global _plot_canvas, _plot_toolbar
+    _show_plot_panel()
+    _clear_plot_widgets()
+
+    _plot_canvas = FigureCanvasTkAgg(fig, master=plot_body)
+    _plot_canvas.draw()
+    _plot_canvas.get_tk_widget().pack(fill="both", expand=True)
+
+    toolbar_row = ttk.Frame(plot_body)
+    toolbar_row.pack(fill="x")
+    _plot_toolbar = NavigationToolbar2Tk(_plot_canvas, toolbar_row)
+    _plot_toolbar.update()
+
+
+def _embedded_plt_show(block=None):
+    """Sustituto de plt.show: en lugar de ventana nueva, redirige al panel embebido."""
+    if plt.get_fignums():
+        _render_figure(plt.gcf())
+    return None
+
+
+plt.show = _embedded_plt_show
+
+
+def run_embedded_plot(plot_fn, *args):
+    """
+    EXTRA: en lugar de abrir una ventana aparte de matplotlib, se ejecuta la funcion
+    de grafico (PlotArrivals, PlotAirports, etc.) y el resultado se incrusta abajo en la app.
+    """
+    plt.close("all")
+    try:
+        plot_fn(*args)
+    except Exception as exc:
+        set_status(f"✘ Error al generar el gráfico: {exc}", "red")
+        messagebox.showerror("Error de gráfico", str(exc))
+        return
+
+    if plt.get_fignums():
+        _render_figure(plt.gcf())
+        set_status("Gráfico actualizado en el panel inferior.", "green")
+    else:
+        set_status("⚠ La función no generó ningún gráfico.", "orange")
+
+
+def set_status(msg: str, color: str = "black"):
+    """Actualiza el mensaje de la barra de estado."""
+    status_var.set(f"  {msg}")
+    status_label.config(foreground=color)
+
+
+def make_file_row(
+    parent,
+    label_text: str,
+    filetypes=None,
+    row: int = 0,
+    save_mode: bool = False,
+    default_ext: str = ".txt",
+):
+    """Crea una fila con etiqueta, campo de texto y boton Examinar para elegir archivos."""
+    if filetypes is None:
+        filetypes = [("Todos los archivos", "*.*")]
+
+    ttk.Label(parent, text=label_text).grid(
+        row=row, column=0, padx=(0, 6), pady=4, sticky="e"
+    )
+
+    entry = ttk.Entry(parent, width=22)
+    entry.grid(row=row, column=1, padx=4, pady=4, sticky="ew")
+
+    def browse():
+        if save_mode:
+            path = filedialog.asksaveasfilename(
+                defaultextension=default_ext,
+                filetypes=filetypes,
+                title=f"Guardar — {label_text}",
+            )
+        else:
+            path = filedialog.askopenfilename(
+                filetypes=filetypes, title=f"Abrir — {label_text}"
+            )
+        if path:
+            entry.delete(0, tk.END)
+            entry.insert(0, path)
+
+    btn = ttk.Button(parent, text="📂", width=3, command=browse)
+    btn.grid(row=row, column=2, padx=(2, 0), pady=4)
+    Tooltip(btn, "Explorar archivos")
+    parent.columnconfigure(1, weight=1)
+    return entry
+
+
+class Tooltip:
+    """Clase EXTRA: al pasar el raton sobre un widget muestra un texto de ayuda flotante."""
+    def __init__(self, widget, text: str):
+        self.widget = widget
+        self.text = text
+        self.tw = None
+        widget.bind("<Enter>", self._show)
+        widget.bind("<Leave>", self._hide)
+
+    def _show(self, _=None):
+        x, y, _, cy = (
+            self.widget.bbox("insert") if hasattr(self.widget, "bbox") else (0, 0, 0, 0)
+        )
+        x += self.widget.winfo_rootx() + 28
+        y += self.widget.winfo_rooty() + cy + 20
+        self.tw = tk.Toplevel(self.widget)
+        self.tw.wm_overrideredirect(True)
+        self.tw.wm_geometry(f"+{x}+{y}")
+        tk.Label(
+            self.tw,
+            text=self.text,
+            justify="left",
+            background="#ffffe0",
+            relief="solid",
+            borderwidth=1,
+            font=("Segoe UI", 9),
+        ).pack()
+
+    def _hide(self, _=None):
+        if self.tw:
+            self.tw.destroy()
+            self.tw = None
+
+
 # ===============================================================
 #  LAYOUT PRINCIPAL
-#  Aquí montamos toda la estructura visual de la ventana
 # ===============================================================
 
-# Frame principal que ocupa toda la ventana
 root_frame = ttk.Frame(app, padding=12)
 root_frame.pack(fill="both", expand=True)
-root_frame.rowconfigure(0, weight=1)   # la fila superior (controles) ocupa el espacio disponible
-root_frame.rowconfigure(1, weight=0)   # la fila inferior (gráficos) empieza oculta
+root_frame.rowconfigure(0, weight=1)
+root_frame.rowconfigure(1, weight=0)
 root_frame.columnconfigure(0, weight=1)
 
-# ---------- Zona superior: controles + listbox ----------
-# La dividimos en dos columnas: izquierda (pestañas) y derecha (lista)
 top_frame = ttk.Frame(root_frame)
 top_frame.grid(row=0, column=0, sticky="nsew")
-top_frame.columnconfigure(0, weight=0)  # la izquierda no se estira
-top_frame.columnconfigure(1, weight=1)  # la derecha sí se estira
+top_frame.columnconfigure(0, weight=0)
+top_frame.columnconfigure(1, weight=1)
 top_frame.rowconfigure(0, weight=1)
 
-# Frame izquierdo donde van las pestañas de control
 left_frame = ttk.Frame(top_frame)
 left_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 12))
 
-# Notebook = el control de pestañas
 notebook = ttk.Notebook(left_frame)
 notebook.pack(fill="both", expand=True)
 
-# Creamos las cuatro pestañas
-tab_db = ttk.Frame(notebook, padding=12)    # Base de datos de aeropuertos
-tab_edit = ttk.Frame(notebook, padding=12)  # Edición manual
-tab_vuelo = ttk.Frame(notebook, padding=12) # Gestión de vuelos
-tab_lebl = ttk.Frame(notebook, padding=12)  # Estructura del aeropuerto LEBL
+tab_db = ttk.Frame(notebook, padding=12)
+tab_edit = ttk.Frame(notebook, padding=12)
+tab_vuelo = ttk.Frame(notebook, padding=12)
+tab_lebl = ttk.Frame(notebook, padding=12)
 
 notebook.add(tab_db, text="  🗄 Base de Datos  ")
 notebook.add(tab_edit, text="  ✏ Edición  ")
 notebook.add(tab_vuelo, text="  ✈ Vuelos  ")
 notebook.add(tab_lebl, text="  🏗 LEBL  ")
 
-# Frame derecho: pestañas cuadro dialogo + animacion LEBL
 right_frame = ttk.LabelFrame(top_frame, text="  Panel derecho  ", padding=10)
 right_frame.grid(row=0, column=1, sticky="nsew")
 right_frame.rowconfigure(1, weight=1)
 right_frame.columnconfigure(0, weight=1)
 
-# Contador que muestra cuántos elementos hay cargados
 lbl_count = ttk.Label(right_frame, text="Sin datos cargados", foreground="gray")
 lbl_count.grid(row=0, column=0, sticky="w", pady=(0, 6))
 
@@ -1000,32 +954,27 @@ right_notebook.add(tab_animation, text="  Animacion  ")
 tab_dialog.rowconfigure(0, weight=1)
 tab_dialog.columnconfigure(0, weight=1)
 
-# Barras de desplazamiento para la lista (vertical y horizontal)
 scrollbar_v = ttk.Scrollbar(tab_dialog, orient="vertical")
 scrollbar_v.grid(row=0, column=1, sticky="ns")
 scrollbar_h = ttk.Scrollbar(tab_dialog, orient="horizontal")
 scrollbar_h.grid(row=1, column=0, sticky="ew")
 
-# La lista principal donde se muestran los datos
 listbox = tk.Listbox(
     tab_dialog,
     yscrollcommand=scrollbar_v.set,
     xscrollcommand=scrollbar_h.set,
-    font=("Consolas", 10),   # fuente monoespaciada para que todo quede alineado
-    selectmode="extended",   # permite seleccionar varios elementos a la vez
+    font=("Consolas", 10),
+    selectmode="extended",
     activestyle="dotbox",
 )
 listbox.grid(row=0, column=0, sticky="nsew")
-# Conectamos las barras de desplazamiento con la lista
 scrollbar_v.config(command=listbox.yview)
 scrollbar_h.config(command=listbox.xview)
 
-# ---------- Zona inferior: panel de gráficos (oculto al inicio) ----------
 plot_frame = ttk.LabelFrame(root_frame, text="  Gráficos  ", padding=8)
 plot_frame.columnconfigure(0, weight=1)
 plot_frame.rowconfigure(1, weight=1)
 
-# Cabecera del panel de gráficos con el título y el botón de cerrar
 plot_header = ttk.Frame(plot_frame)
 plot_header.grid(row=0, column=0, sticky="ew", pady=(0, 6))
 plot_header.columnconfigure(0, weight=1)
@@ -1033,7 +982,6 @@ plot_header.columnconfigure(0, weight=1)
 ttk.Label(plot_header, text="Vista de gráfico activo", font=("Segoe UI", 9, "bold")).grid(
     row=0, column=0, sticky="w"
 )
-# Botón para cerrar el panel de gráficos
 btn_close_plot = ttk.Button(
     plot_header,
     text="✕",
@@ -1043,7 +991,6 @@ btn_close_plot = ttk.Button(
 btn_close_plot.grid(row=0, column=1, sticky="e")
 Tooltip(btn_close_plot, "Cerrar gráfico")
 
-# El cuerpo del panel donde va el gráfico propiamente dicho
 plot_body = ttk.Frame(plot_frame)
 plot_body.grid(row=1, column=0, sticky="nsew")
 plot_body.rowconfigure(0, weight=1)
@@ -1057,7 +1004,6 @@ ttk.Label(tab_db, text="Archivo de aeropuertos:", font=("Segoe UI", 9, "bold")).
     row=0, column=0, columnspan=3, sticky="w", pady=(0, 4)
 )
 
-# Fila para elegir el archivo de aeropuertos
 archivo_entry = make_file_row(
     tab_db,
     "Archivo:",
@@ -1065,7 +1011,6 @@ archivo_entry = make_file_row(
     row=1,
 )
 
-# Botón principal para cargar los aeropuertos (destacado con estilo Accent)
 ttk.Button(
     tab_db,
     text="  Cargar aeropuertos  ",
@@ -1081,7 +1026,6 @@ ttk.Label(tab_db, text="Herramientas:", font=("Segoe UI", 9, "bold")).grid(
     row=4, column=0, columnspan=3, sticky="w", pady=(0, 6)
 )
 
-# Botones de herramientas de la pestaña de base de datos
 ttk.Button(tab_db, text="🌍 Aplicar Schengen", command=apply_schengen).grid(
     row=5, column=0, columnspan=3, sticky="ew", pady=3
 )
@@ -1100,13 +1044,12 @@ ttk.Label(tab_db, text="Exportar aeropuertos Schengen:", font=("Segoe UI", 9, "b
     row=9, column=0, columnspan=3, sticky="w", pady=(0, 4)
 )
 
-# Fila para elegir dónde guardar los aeropuertos Schengen
 save_entry = make_file_row(
     tab_db,
     "Destino:",
     filetypes=[("Archivos de texto", "*.txt"), ("Todos", "*.*")],
     row=10,
-    save_mode=True,  # en modo guardado (no apertura)
+    save_mode=True,
 )
 
 ttk.Button(tab_db, text="💾 Guardar Schengen", command=save_airports).grid(
@@ -1119,7 +1062,6 @@ tab_db.columnconfigure(1, weight=1)
 #  PESTAÑA 2: EDICIÓN MANUAL
 # ===============================================================
 
-# Sección para añadir un aeropuerto nuevo a mano
 frm_add = ttk.LabelFrame(tab_edit, text=" ➕ Añadir aeropuerto ", padding=10)
 frm_add.pack(fill="x", pady=(0, 10))
 
@@ -1144,7 +1086,6 @@ ttk.Button(
     style="Accent.TButton",
 ).grid(row=3, column=0, columnspan=2, sticky="ew", pady=(10, 0))
 
-# Sección para eliminar un aeropuerto por su código
 frm_del = ttk.LabelFrame(tab_edit, text=" 🗑 Eliminar aeropuerto ", padding=10)
 frm_del.pack(fill="x")
 
@@ -1160,7 +1101,6 @@ ttk.Button(frm_del, text="Eliminar aeropuerto", command=delete_airport).grid(
 #  PESTAÑA 3: VUELOS
 # ===============================================================
 
-# Sección de carga de archivos de llegadas y salidas
 ttk.Label(tab_vuelo, text="Archivo de llegadas:", font=("Segoe UI", 9, "bold")).grid(
     row=0, column=0, columnspan=3, sticky="w", pady=(0, 4)
 )
@@ -1181,7 +1121,6 @@ departures_entry = make_file_row(
     row=3,
 )
 
-# Botones de carga de datos
 ttk.Button(
     tab_vuelo,
     text="  Cargar vuelos  ",
@@ -1204,7 +1143,6 @@ ttk.Label(tab_vuelo, text="Análisis y gráficos:", font=("Segoe UI", 9, "bold")
     row=7, column=0, columnspan=3, sticky="w", pady=(0, 6)
 )
 
-# Lista de botones de análisis — se colocan en 2 columnas automáticamente
 btn_data = [
     ("🔁 Combinar llegadas y salidas", merge_movements_ui),
     ("🌙 Night Aircraft", night_aircraft_ui),
@@ -1215,9 +1153,8 @@ btn_data = [
     ("📏 Vuelos > 2000 km", show_long_distance),
     ("💾 Guardar vuelos (.txt)", save_flights_data),
 ]
-# Distribuimos los botones en una cuadrícula de 2 columnas
 for idx, (label, cmd) in enumerate(btn_data):
-    r, c = divmod(idx, 2)  # divmod nos da la fila y columna automáticamente
+    r, c = divmod(idx, 2)
     ttk.Button(tab_vuelo, text=label, command=cmd).grid(
         row=9 + r, column=c, padx=4, pady=4, sticky="ew"
     )
@@ -1233,7 +1170,6 @@ ttk.Label(tab_lebl, text="Archivo de estructura:", font=("Segoe UI", 9, "bold"))
     row=0, column=0, columnspan=3, sticky="w", pady=(0, 4)
 )
 
-# Fila para elegir el archivo con la estructura del aeropuerto
 structure_entry = make_file_row(
     tab_lebl,
     "Archivo:",
@@ -1256,8 +1192,6 @@ ttk.Label(tab_lebl, text="Gestión de puertas:", font=("Segoe UI", 9, "bold")).g
     row=4, column=0, columnspan=3, sticky="w", pady=(0, 6)
 )
 
-# ----- Pestaña LEBL: GESTION DE PUERTAS (simulacion AssignGate, listado ~161 puertas) -----
-# No genera la animacion del mapa; solo marca ocupacion en Terminals.txt en memoria.
 ttk.Button(
     tab_lebl, text="🚦 Asignación automática de puertas", command=assign_gates_ui
 ).grid(row=5, column=0, columnspan=3, sticky="ew", pady=4)
@@ -1282,9 +1216,6 @@ ttk.Separator(tab_lebl, orient="horizontal").grid(
     row=9, column=0, columnspan=3, sticky="ew", pady=8
 )
 
-# ----- Pestaña LEBL: solo ANIMACION (mapa Canvas, panel derecho) -----
-# La gestion de puertas (botones de arriba) usa Terminals.txt + T1/T2_Airlines;
-# no limita cuantos vuelos se animan. El boton de abajo anima todos los Arrivals validos.
 ttk.Label(tab_lebl, text="Animacion LEBL:", font=("Segoe UI", 9, "bold")).grid(
     row=10, column=0, columnspan=3, sticky="w", pady=(0, 4)
 )
@@ -1307,14 +1238,12 @@ tab_lebl.columnconfigure(1, weight=1)
 
 # ===============================================================
 #  BARRA DE ESTADO INFERIOR
-#  Una barra en la parte de abajo que muestra mensajes al usuario
 # ===============================================================
 ttk.Separator(app, orient="horizontal").pack(side="bottom", fill="x")
 
 status_bar = ttk.Frame(app, relief="sunken")
 status_bar.pack(side="bottom", fill="x")
 
-# Variable de texto que controla lo que aparece en la barra
 status_var = tk.StringVar(value="  Listo.")
 status_label = ttk.Label(
     status_bar, textvariable=status_var, anchor="w", font=("Segoe UI", 9)
@@ -1323,8 +1252,6 @@ status_label.pack(side="left", fill="x", expand=True, padx=4, pady=2)
 
 # ===============================================================
 #  ARRANQUE
-#  Ponemos valores por defecto en los campos de archivo para que
-#  el usuario no tenga que buscar los archivos cada vez que abre el programa
 # ===============================================================
 archivo_entry.insert(0, os.path.join(DATA_DIR, "Airports.txt"))
 arrivals_entry.insert(0, os.path.join(DATA_DIR, "Arrivals.txt"))
@@ -1333,7 +1260,6 @@ structure_entry.insert(0, os.path.join(DATA_DIR, "Terminals.txt"))
 lebl_arrivals_entry.insert(0, os.path.join(DATA_DIR, "Arrivals.txt"))
 save_entry.insert(0, os.path.join(OUTPUT_DIR, "SchengenAirports.txt"))
 
-# Base de aeropuertos en memoria (KML y >2000 km la necesitan)
 _default_airports = os.path.join(DATA_DIR, "Airports.txt")
 if os.path.isfile(_default_airports):
     _db = LoadAirportsDB(_default_airports)
@@ -1347,10 +1273,9 @@ set_status("Listo. Selecciona una pestaña para comenzar.")
 
 
 # ===============================================================
-#  FUNCIONES EXTRAS — Animacion LEBL en pestaña LEBL (no en enunciado)
+#  FUNCIONES EXTRAS — Animacion del aeropuerto (mapa con aviones, reloj, taxi)
 # ===============================================================
 
-# --- Datos de vuelos (compartido: asignacion de puertas y animacion) ---
 
 _lebl_anim_refs = {"controller": None}
 _anim_prep_queue = queue.Queue()
@@ -1361,7 +1286,7 @@ _app_shutting_down = False
 
 
 def _stop_lebl_animation():
-    """Detiene animacion en pantalla y callbacks after pendientes."""
+    """Detiene el bucle de la animacion y libera el controlador del canvas."""
     global _lebl_anim_refs
     ctrl = _lebl_anim_refs.get("controller")
     if ctrl:
@@ -1373,7 +1298,7 @@ def _stop_lebl_animation():
 
 
 def _stop_animation_prep_poll():
-    """Cancela el sondeo de preparacion en segundo plano."""
+    """Cancela el temporizador que comprueba si la animacion ya esta preparada."""
     global _anim_prep_poll_id
     if _anim_prep_poll_id is not None:
         try:
@@ -1384,7 +1309,7 @@ def _stop_animation_prep_poll():
 
 
 def _poll_animation_prep():
-    """Lee resultado del hilo de preparacion (solo hilo principal tkinter)."""
+    """Cada 150 ms mira si el hilo en segundo plano termino de cargar datos de animacion."""
     global _anim_prep_poll_id, _anim_prep_busy, _anim_prep_generation
 
     if _app_shutting_down:
@@ -1414,6 +1339,10 @@ def _poll_animation_prep():
 
 
 def _on_animation_ready(anim_data, error):
+    """
+    Se llama cuando el hilo termina de preparar la animacion.
+    Si hubo error, se muestra un mensaje; si no, se crea el canvas con el mapa y los aviones.
+    """
     if error:
         messagebox.showerror("Error al animar", str(error))
         set_status(f"Error animacion LEBL: {error}", "red")
@@ -1437,10 +1366,8 @@ def _on_animation_ready(anim_data, error):
         set_status(msg, "green")
 
 
-# --- Animacion: UI (pestaña Animacion del panel derecho) ---
-
 def _show_animation_loading():
-    """Placeholder mientras se calculan rutas en segundo plano."""
+    """Muestra mensaje de «cargando» en el panel de animacion mientras se preparan datos."""
     for child in tab_animation.winfo_children():
         child.destroy()
     right_notebook.select(tab_animation)
@@ -1453,7 +1380,10 @@ def _show_animation_loading():
 
 
 def _show_lebl_canvas_animation(anim_data):
-    """Muestra la animacion LEBL embebida en la pestaña Animacion (Canvas tkinter)."""
+    """
+    Se vacia la pestana Animacion, se llama a CreateLEBLAnimationWidget con los datos
+  ya calculados y se guarda el controlador para poder detener la animacion al cerrar.
+    """
     _stop_lebl_animation()
 
     for child in tab_animation.winfo_children():
@@ -1463,7 +1393,7 @@ def _show_lebl_canvas_animation(anim_data):
     tab_animation.update_idletasks()
 
     try:
-        controller = create_lebl_animation_widget(tab_animation, anim_data)
+        controller = CreateLEBLAnimationWidget(tab_animation, anim_data)
     except Exception as exc:
         messagebox.showerror("Error al mostrar animacion", str(exc))
         return False
@@ -1474,26 +1404,28 @@ def _show_lebl_canvas_animation(anim_data):
     return True
 
 
-# --- Animacion: preparacion (Arrivals, Departures, puertas por vuelo en aircraft.py) ---
-
 def _load_aircrafts_for_lebl(arrivals_path):
-    """Carga aviones para AssignGate (legado o formato ampliado)."""
+    """
+    Primero se intenta el formato basico de cuatro columnas con LoadArrivals.
+    Si no hay resultados, se lee el AIP, se obtienen stands y se usa ParseFlightsFile
+    para el formato ampliado de llegadas.
+    """
     acs = LoadArrivals(arrivals_path)
     if acs:
         return acs
 
     from src.aircraft import (
-        parse_flights_file,
-        _lebl_load_aip_text_stand,
-        _lebl_aip_path,
-        parse_aip_stands,
+        ParseFlightsFile,
+        LeblLoadAipTextStand,
+        LeblAipPath,
+        ParseAipStands,
         PASSENGER_AIRLINE_STANDS,
     )
 
-    aip_text = _lebl_load_aip_text_stand(_lebl_aip_path())
-    stands = parse_aip_stands(aip_text, categories={"airline"})
+    aip_text = LeblLoadAipTextStand(LeblAipPath())
+    stands = ParseAipStands(aip_text, categories={"airline"})
     stand_ids = sorted(PASSENGER_AIRLINE_STANDS & {s["id"] for s in stands})
-    flights = parse_flights_file(arrivals_path, stand_ids)
+    flights = ParseFlightsFile(arrivals_path, stand_ids)
 
     acs = []
     for f in flights:
@@ -1508,7 +1440,11 @@ def _load_aircrafts_for_lebl(arrivals_path):
 
 
 def _sync_lebl_flight_data():
-    """Carga Arrivals/Departures en memoria para el flujo LEBL + animacion."""
+    """
+    Lee Arrivals (y Departures si hay ruta) desde los campos de la pestaña LEBL.
+    Rellena aircrafts, departures, all_movements y night_aircrafts para puertas y animacion.
+    Devuelve (True, mensaje) o (False, motivo del fallo).
+    """
     global aircrafts, departures, all_movements, night_aircrafts
 
     arrivals_path = lebl_arrivals_entry.get().strip()
@@ -1538,27 +1474,27 @@ def _sync_lebl_flight_data():
 
 
 def _build_gate_assignments_from_bcn():
-    """Puertas LEBL (Terminals.txt) -> stands AIP para el mapa."""
+    """Tras asignar puertas en LEBL, traduce nombres de puerta a ids de stand AIP."""
     if not bcn_airport:
         return {}
     from src.aircraft import (
-        build_gate_assignments_from_bcn,
-        parse_aip_stands,
-        _lebl_load_aip_text_stand,
-        _lebl_aip_path,
+        BuildGateAssignmentsFromBcn,
+        ParseAipStands,
+        LeblLoadAipTextStand,
+        LeblAipPath,
         PASSENGER_AIRLINE_STANDS,
     )
-    aip_text = _lebl_load_aip_text_stand(_lebl_aip_path())
-    stands = parse_aip_stands(aip_text, categories={"airline"})
+    aip_text = LeblLoadAipTextStand(LeblAipPath())
+    stands = ParseAipStands(aip_text, categories={"airline"})
     stand_ids = sorted(PASSENGER_AIRLINE_STANDS & {s["id"] for s in stands})
-    return build_gate_assignments_from_bcn(bcn_airport, stand_ids)
+    return BuildGateAssignmentsFromBcn(bcn_airport, stand_ids)
 
 
 def _resolve_departures_path_for_animation():
     """
-    Comprueba Departures.txt para la animacion.
-    Devuelve (ruta o None, sin_departures).
-    Sin Departures: solo llegadas (permanecen aparcados, sin salida).
+    Decide que archivo de salidas usar para la animacion (campo Departures).
+    Si no hay archivo, se puede preguntar al usuario o continuar solo con llegadas.
+    Devuelve la ruta y un indicador de si faltan salidas.
     """
     dep_path = departures_entry.get().strip()
     if dep_path and os.path.isfile(dep_path):
@@ -1584,8 +1520,6 @@ def _resolve_departures_path_for_animation():
             return chosen, False
     return None, True
 
-
-# --- Animacion: boton "Animar Llegadas Y Salidas" (no confundir con asignacion de puertas) ---
 
 def animate_lebl_operations_ui():
     """
@@ -1657,10 +1591,8 @@ def animate_lebl_operations_ui():
 btn_animate_lebl.configure(command=animate_lebl_operations_ui)
 
 
-# --- Extras: cierre limpio de la aplicacion ---
-
 def _shutdown_application():
-    """Libera Tk/matplotlib antes de salir (evita errores en __del__)."""
+    """Al cerrar la app: para animacion, graficos y cola de preparacion de forma ordenada."""
     global _app_shutting_down, _anim_prep_busy, _anim_prep_generation
 
     if _app_shutting_down:
@@ -1712,6 +1644,7 @@ def _shutdown_application():
 
 
 def _on_app_close():
+    """Manejador del boton X de la ventana: llama a _shutdown_application y cierra."""
     _shutdown_application()
     try:
         app.quit()
@@ -1721,7 +1654,6 @@ def _on_app_close():
 
 app.protocol("WM_DELETE_WINDOW", _on_app_close)
 
-# Iniciamos el bucle principal de la ventana — esto mantiene la app abierta
 try:
     app.mainloop()
 except KeyboardInterrupt:

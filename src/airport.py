@@ -1,8 +1,17 @@
+# =============================================================================
+# airport.py — Base de datos de aeropuertos
+#
+# Se gestionan aeropuertos: codigo ICAO, coordenadas y si pertenecen al espacio
+# Schengen. Las funciones principales van arriba; al final hay ayudas para
+# graficos y guardar archivos (EXTRA).
+# =============================================================================
+
 import os
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from matplotlib.patches import Patch
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -29,107 +38,13 @@ SCHENGEN_PREFIXES = [
 
 
 # ===============================================================
-#  FUNCIONES EXTRAS — Utilidades internas (graficos / salida)
-#  No aparecen en el enunciado del proyecto
+#  FUNCIONES PROYECTO
 # ===============================================================
 
-def _ensure_output_dir():
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
-
-
-def _setup_plot_style():
-    plt.rcParams.update(
-        {
-            "figure.facecolor": CHART["bg"],
-            "axes.facecolor": "white",
-            "axes.edgecolor": CHART["grid"],
-            "axes.labelcolor": CHART["text"],
-            "axes.titleweight": "bold",
-            "axes.titlesize": 13,
-            "axes.labelsize": 11,
-            "axes.labelweight": "medium",
-            "xtick.color": CHART["muted"],
-            "ytick.color": CHART["muted"],
-            "grid.color": CHART["grid"],
-            "grid.linestyle": "-",
-            "grid.alpha": 0.55,
-            "font.family": "sans-serif",
-            "font.sans-serif": ["Segoe UI", "DejaVu Sans", "Arial", "Helvetica"],
-            "legend.framealpha": 0.95,
-            "legend.edgecolor": CHART["grid"],
-        }
-    )
-
-
-def _style_axes(ax, *, title, subtitle=None, xlabel=None, ylabel=None):
-    ax.set_title(title, loc="left", color=CHART["text"], pad=14, fontsize=13, fontweight="bold")
-    if subtitle:
-        ax.text(
-            0.0, 1.02, subtitle,
-            transform=ax.transAxes,
-            fontsize=9, color=CHART["muted"], va="bottom",
-        )
-    if xlabel:
-        ax.set_xlabel(xlabel, color=CHART["text"], labelpad=8)
-    if ylabel:
-        ax.set_ylabel(ylabel, color=CHART["text"], labelpad=8)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.spines["left"].set_color(CHART["grid"])
-    ax.spines["bottom"].set_color(CHART["grid"])
-    ax.tick_params(colors=CHART["muted"], labelsize=9)
-    ax.set_axisbelow(True)
-
-
-def _bar_value_labels(ax, bars, fmt="{:.0f}", offset=0.03, horizontal=False):
-    for bar in bars:
-        if horizontal:
-            value = bar.get_width()
-            if value <= 0:
-                continue
-            span = ax.get_xlim()[1] or 1
-            ax.text(
-                value + span * offset,
-                bar.get_y() + bar.get_height() / 2,
-                fmt.format(value),
-                ha="left", va="center",
-                fontsize=8, color=CHART["text"], fontweight="medium",
-            )
-        else:
-            value = bar.get_height()
-            if value <= 0:
-                continue
-            span = ax.get_ylim()[1] or 1
-            ax.text(
-                bar.get_x() + bar.get_width() / 2,
-                value + span * offset,
-                fmt.format(value),
-                ha="center", va="bottom",
-                fontsize=8, color=CHART["text"], fontweight="medium",
-            )
-
-
-def _save_and_show(fig, filename):
-    _ensure_output_dir()
-    fig.savefig(
-        os.path.join(OUTPUT_DIR, filename),
-        dpi=160,
-        bbox_inches="tight",
-        facecolor=fig.get_facecolor(),
-        edgecolor="none",
-    )
-    plt.show()
-
-
-# ===============================================================
-#  FUNCIONES PROYECTO — Version 1 (airport.py, enunciado)
-#  Clases: Airport
-#  Funciones: IsSchengenAirport, SetSchengen, PrintAirport, LoadAirports,
-#  SaveSchengenAirports, AddAirport, RemoveAirport, PlotAirports, MapAirports
-# ===============================================================
 
 class Airport:
+    """Representa un aeropuerto con codigo, latitud, longitud y bandera Schengen."""
+
     def __init__(self, code, lat, lon):
         self.code = code
         self.lat = lat
@@ -138,16 +53,26 @@ class Airport:
 
 
 def IsSchengenAirport(code):
+    """
+    Mira las dos primeras letras del codigo del aeropuerto (por ejemplo LE de LEBL).
+    Si esa pareja esta en la lista SCHENGEN_PREFIXES, el aeropuerto se considera Schengen.
+    Si el codigo es corto o vacio, se devuelve falso.
+    """
     if not code or len(code) < 2:
         return False
     return code[:2] in SCHENGEN_PREFIXES
 
 
 def SetSchengen(airport):
+    """
+    Llama a IsSchengenAirport con el codigo del aeropuerto recibido
+    y guarda el resultado en airport.schengen (verdadero o falso).
+    """
     airport.schengen = IsSchengenAirport(airport.code)
 
 
 def PrintAirport(airport):
+    """Muestra por pantalla los datos basicos de un aeropuerto (pruebas)."""
     print("Code:", airport.code)
     print("Latitude:", airport.lat)
     print("Longitude:", airport.lon)
@@ -155,6 +80,14 @@ def PrintAirport(airport):
 
 
 def LoadAirports(filename):
+    """
+    Se abre el archivo indicado y se lee linea a linea.
+    Cada linea valida tiene tres partes: codigo de 4 letras, latitud y longitud en texto
+    (letra N/S o E/W mas grados, minutos y segundos pegados, por ejemplo N4138).
+    Esas coordenadas se pasan a numeros decimales para guardarlas en el objeto Airport.
+    La primera linea de cabecera (Code...) y las lineas mal formadas se ignoran.
+    Si el archivo no existe, se devuelve una lista vacia.
+    """
     if not os.path.exists(filename):
         return []
 
@@ -198,35 +131,13 @@ def LoadAirports(filename):
     return airports
 
 
-# Auxiliar de SaveSchengenAirports (no listado en el enunciado)
-def _dec_to_dms_str(value, is_latitude):
-    if is_latitude:
-        if value >= 0:
-            direction = "N"
-        else:
-            direction = "S"
-            value = -value
-        deg_width = 2
-    else:
-        if value >= 0:
-            direction = "E"
-        else:
-            direction = "W"
-            value = -value
-        deg_width = 3
-
-    degrees = int(value)
-    temp = (value - degrees) * 60
-    minutes = int(temp)
-    seconds = int(round((temp - minutes) * 60))
-
-    str_deg = str(degrees).zfill(deg_width)
-    str_min = str(minutes).zfill(2)
-    str_sec = str(seconds).zfill(2)
-    return direction + str_deg + str_min + str_sec
-
-
 def SaveSchengenAirports(airports, filename):
+    """
+    Se recorre la lista de aeropuertos y solo se escriben los que tienen schengen = verdadero.
+    Cada linea del archivo nuevo lleva codigo y coordenadas en formato DMS (como al cargar).
+    Primero se escribe la linea de cabecera CODE LAT LON.
+    Devuelve 0 si el archivo se pudo crear; -1 si la lista estaba vacia o hubo error al escribir.
+    """
     if not airports:
         return -1
 
@@ -236,8 +147,8 @@ def SaveSchengenAirports(airports, filename):
 
             for airport in airports:
                 if airport.schengen:
-                    lat_str = _dec_to_dms_str(airport.lat, is_latitude=True)
-                    lon_str = _dec_to_dms_str(airport.lon, is_latitude=False)
+                    lat_str = DecToDmsStr(airport.lat, is_latitude=True)
+                    lon_str = DecToDmsStr(airport.lon, is_latitude=False)
                     file.write(f"{airport.code} {lat_str} {lon_str}\n")
 
         return 0
@@ -247,6 +158,10 @@ def SaveSchengenAirports(airports, filename):
 
 
 def AddAirport(airports, airport):
+    """
+    Se comprueba si ya hay un aeropuerto con el mismo codigo en la lista.
+    Si no existe, se anade el nuevo al final; si ya existia, no se hace nada.
+    """
     for existing in airports:
         if existing.code == airport.code:
             return
@@ -254,6 +169,11 @@ def AddAirport(airports, airport):
 
 
 def RemoveAirport(airports, code):
+    """
+    Se busca en la lista el aeropuerto cuyo codigo coincide con el indicado.
+    Si se encuentra, se elimina de la lista y se devuelve 0.
+    Si se recorre toda la lista sin encontrarlo, se devuelve -1.
+    """
     i = 0
     while i < len(airports):
         if airports[i].code == code:
@@ -264,137 +184,63 @@ def RemoveAirport(airports, code):
 
 
 def PlotAirports(airports):
+    """
+    Primero se cuentan cuantos aeropuertos tienen schengen verdadero y cuantos no.
+    Con esos dos numeros se dibuja una sola columna apilada (abajo Schengen, arriba no Schengen).
+    El grafico se guarda como airports_stacked_bar.png en output y se muestra.
+    Si la lista esta vacia, solo se imprime un mensaje de error.
+    """
     if not airports:
+        print("Error: la lista de aeropuertos esta vacia, no se puede dibujar el grafico.")
         return
 
-    _setup_plot_style()
+    count_schengen = 0
+    count_no_schengen = 0
+    i = 0
+    while i < len(airports):
+        if airports[i].schengen:
+            count_schengen = count_schengen + 1
+        else:
+            count_no_schengen = count_no_schengen + 1
+        i = i + 1
 
-    schengen_pts = [a for a in airports if a.schengen]
-    other_pts = [a for a in airports if not a.schengen]
-    count_schengen = len(schengen_pts)
-    count_no_schengen = len(other_pts)
-    total = len(airports)
+    SetupPlotStyle()
+    fig, ax = plt.subplots(figsize=(7, 5), facecolor=CHART["bg"])
 
-    fig = plt.figure(figsize=(10.5, 7.2), facecolor=CHART["bg"])
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.35, 1], hspace=0.38, wspace=0.28)
-    ax_map = fig.add_subplot(gs[0, :])
-    ax_pie = fig.add_subplot(gs[1, 0])
-    ax_bar = fig.add_subplot(gs[1, 1])
-
-    if schengen_pts:
-        ax_map.scatter(
-            [a.lon for a in schengen_pts],
-            [a.lat for a in schengen_pts],
-            c=CHART["schengen"],
-            s=42,
-            alpha=0.85,
-            edgecolors="white",
-            linewidths=0.6,
-            label="Schengen",
-            zorder=3,
-        )
-    if other_pts:
-        ax_map.scatter(
-            [a.lon for a in other_pts],
-            [a.lat for a in other_pts],
-            c=CHART["non_schengen"],
-            s=42,
-            alpha=0.85,
-            edgecolors="white",
-            linewidths=0.6,
-            label="No Schengen",
-            zorder=3,
-        )
-
-    _style_axes(
-        ax_map,
-        title="Mapa 2D de aeropuertos",
-        subtitle=f"{total} aeropuertos · verde = Schengen · naranja = fuera de Schengen",
-        xlabel="Longitud (°)",
-        ylabel="Latitud (°)",
+    ax.bar(
+        ["Aeropuertos"],
+        [count_schengen],
+        label="Schengen",
+        color=CHART["schengen"],
+        edgecolor="white",
+        width=0.5,
     )
-    ax_map.grid(True, zorder=0)
-    ax_map.legend(loc="upper right", fontsize=9, frameon=True)
-
-    if total:
-        sizes = [count_schengen, count_no_schengen]
-        labels = ["Espacio Schengen", "Fuera de Schengen"]
-        colors = [CHART["schengen"], CHART["non_schengen"]]
-
-        wedges, texts, autotexts = ax_pie.pie(
-            sizes,
-            labels=labels,
-            colors=colors,
-            explode=(0.03, 0.03),
-            autopct=lambda pct: f"{pct:.1f}%\n({int(round(pct * total / 100))})",
-            startangle=90,
-            counterclock=False,
-            wedgeprops={"linewidth": 1.2, "edgecolor": "white"},
-            textprops={"fontsize": 9, "color": CHART["text"]},
-            pctdistance=0.72,
-        )
-        for t in autotexts:
-            t.set_fontsize(8)
-            t.set_fontweight("bold")
-            t.set_color("white")
-
-        ax_pie.set_title(
-            "Distribución Schengen",
-            loc="left",
-            color=CHART["text"],
-            fontweight="bold",
-            pad=10,
-        )
-
-        categories = labels
-        x_pos = range(len(categories))
-        bars = ax_bar.bar(
-            x_pos,
-            sizes,
-            color=colors,
-            edgecolor="white",
-            linewidth=1.0,
-            width=0.55,
-            zorder=3,
-        )
-        ax_bar.set_xticks(x_pos)
-        ax_bar.set_xticklabels(categories, fontsize=9)
-        _style_axes(
-            ax_bar,
-            title="Comparativa absoluta",
-            subtitle="Recuerda aplicar Schengen antes del gráfico",
-            ylabel="Número de aeropuertos",
-        )
-        ax_bar.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
-        ax_bar.grid(axis="y", zorder=0)
-        _bar_value_labels(ax_bar, bars)
-
-        legend_handles = [
-            Patch(facecolor=CHART["schengen"], edgecolor="white", label="Schengen"),
-            Patch(facecolor=CHART["non_schengen"], edgecolor="white", label="No Schengen"),
-        ]
-        fig.legend(
-            handles=legend_handles,
-            loc="lower center",
-            ncol=2,
-            bbox_to_anchor=(0.5, -0.01),
-            fontsize=9,
-        )
-
-    fig.suptitle(
-        "Análisis de la red de aeropuertos",
-        x=0.02,
-        y=0.98,
-        ha="left",
-        fontsize=12,
-        fontweight="bold",
-        color=CHART["text"],
+    ax.bar(
+        ["Aeropuertos"],
+        [count_no_schengen],
+        bottom=[count_schengen],
+        label="No Schengen",
+        color=CHART["non_schengen"],
+        edgecolor="white",
+        width=0.5,
     )
-    fig.subplots_adjust(left=0.07, right=0.98, top=0.90, bottom=0.14, hspace=0.48, wspace=0.30)
-    _save_and_show(fig, "airports_overview.png")
+
+    ax.set_ylabel("Numero de aeropuertos")
+    ax.set_title("Aeropuertos Schengen vs No Schengen (stacked bar)")
+    ax.legend(loc="upper right")
+    ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+    ax.grid(axis="y", alpha=0.4)
+    fig.tight_layout()
+    SaveAndShow(fig, "airports_stacked_bar.png")
 
 
 def MapAirports(airports, filename):
+    """
+    Se crea un archivo de texto en formato KML (para Google Earth u otro visor de mapas).
+    Por cada aeropuerto se escribe un punto con su nombre y coordenadas.
+    Los Schengen llevan un color de pin y los no Schengen otro.
+    Devuelve 0 si se escribio bien; -1 si no habia aeropuertos o fallo el guardado.
+    """
     if not airports:
         return -1
     try:
@@ -426,3 +272,139 @@ def MapAirports(airports, filename):
         return 0
     except IOError:
         return -1
+
+
+#  Que aporta el bloque EXTRA (resumen)
+#
+#  PlotAirports (barras Schengen / no Schengen) queda arriba. Las funciones de
+#  abajo mejoran la presentacion: colores, guardar figuras en output/ y convertir
+#  coordenadas decimales a texto DMS al exportar Schengen.
+
+# ===============================================================
+#  FUNCIONES EXTRAS
+# ===============================================================
+
+
+def EnsureOutputDir():
+    """Si no existe la carpeta output en el proyecto, se crea en disco."""
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
+
+
+def SetupPlotStyle():
+    """Define colores y fuentes por defecto para los graficos de airport.py (EXTRA)."""
+    plt.rcParams.update(
+        {
+            "figure.facecolor": CHART["bg"],
+            "axes.facecolor": "white",
+            "axes.edgecolor": CHART["grid"],
+            "axes.labelcolor": CHART["text"],
+            "axes.titleweight": "bold",
+            "axes.titlesize": 13,
+            "axes.labelsize": 11,
+            "axes.labelweight": "medium",
+            "xtick.color": CHART["muted"],
+            "ytick.color": CHART["muted"],
+            "grid.color": CHART["grid"],
+            "grid.linestyle": "-",
+            "grid.alpha": 0.55,
+            "font.family": "sans-serif",
+            "font.sans-serif": ["Segoe UI", "DejaVu Sans", "Arial", "Helvetica"],
+            "legend.framealpha": 0.95,
+            "legend.edgecolor": CHART["grid"],
+        }
+    )
+
+
+def StyleAxes(ax, *, title, subtitle=None, xlabel=None, ylabel=None):
+    """Aplica titulo y etiquetas con estilo uniforme a un eje de matplotlib."""
+    ax.set_title(title, loc="left", color=CHART["text"], pad=14, fontsize=13, fontweight="bold")
+    if subtitle:
+        ax.text(
+            0.0, 1.02, subtitle,
+            transform=ax.transAxes,
+            fontsize=9, color=CHART["muted"], va="bottom",
+        )
+    if xlabel:
+        ax.set_xlabel(xlabel, color=CHART["text"], labelpad=8)
+    if ylabel:
+        ax.set_ylabel(ylabel, color=CHART["text"], labelpad=8)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color(CHART["grid"])
+    ax.spines["bottom"].set_color(CHART["grid"])
+    ax.tick_params(colors=CHART["muted"], labelsize=9)
+    ax.set_axisbelow(True)
+
+
+def BarValueLabels(ax, bars, fmt="{:.0f}", offset=0.03, horizontal=False):
+    """Escribe el valor numerico sobre cada barra del grafico."""
+    for bar in bars:
+        if horizontal:
+            value = bar.get_width()
+            if value <= 0:
+                continue
+            span = ax.get_xlim()[1] or 1
+            ax.text(
+                value + span * offset,
+                bar.get_y() + bar.get_height() / 2,
+                fmt.format(value),
+                ha="left", va="center",
+                fontsize=8, color=CHART["text"], fontweight="medium",
+            )
+        else:
+            value = bar.get_height()
+            if value <= 0:
+                continue
+            span = ax.get_ylim()[1] or 1
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                value + span * offset,
+                fmt.format(value),
+                ha="center", va="bottom",
+                fontsize=8, color=CHART["text"], fontweight="medium",
+            )
+
+
+def SaveAndShow(fig, filename):
+    """Guarda la figura en output/ y la muestra con plt.show()."""
+    EnsureOutputDir()
+    fig.savefig(
+        os.path.join(OUTPUT_DIR, filename),
+        dpi=160,
+        bbox_inches="tight",
+        facecolor=fig.get_facecolor(),
+        edgecolor="none",
+    )
+    plt.show()
+
+
+def DecToDmsStr(value, is_latitude):
+    """
+    Pasa grados decimales a texto DMS (N4138, E00204) para guardar en archivo.
+    Se separa en grados enteros, minutos y segundos y se elige N/S o E/W segun el signo.
+    """
+    if is_latitude:
+        if value >= 0:
+            direction = "N"
+        else:
+            direction = "S"
+            value = -value
+        deg_width = 2
+    else:
+        if value >= 0:
+            direction = "E"
+        else:
+            direction = "W"
+            value = -value
+        deg_width = 3
+
+    degrees = int(value)
+    temp = (value - degrees) * 60
+    minutes = int(temp)
+    seconds = int(round((temp - minutes) * 60))
+
+    str_deg = str(degrees).zfill(deg_width)
+    str_min = str(minutes).zfill(2)
+    str_sec = str(seconds).zfill(2)
+    return direction + str_deg + str_min + str_sec
